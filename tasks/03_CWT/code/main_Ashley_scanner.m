@@ -745,7 +745,7 @@ try
             % Get ready to continue...
             Screen('FillRect', scr.win, scr.BackgroundGray, scr.winRect);
             Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
-            DrawFormattedText(scr.win, ['You can now continue. Press SPACE...'], 'center', 'center', scr.TextColour);
+            DrawFormattedText(scr.win, ['You can now continue. Press BUTTON 3...'], 'center', 'center', scr.TextColour);
             [~, ~] = Screen('Flip', scr.win);
             
             % Wait for space

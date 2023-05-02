@@ -31,9 +31,9 @@ tutorialGenders = round(rand(1, nTrialsFAD));
 if vars.language == 1       % English
     
     instr.A     = 'In this experiment, you will complete three tasks. \n \n \n \n 1st - Face discrimination task, duration 5 minutes \n \n 2nd - Localizer Task, duration 5 minutes \n \n 3rd - Learning task, duration 45 minutes. \n \n \n \n Before the 1st and 3rd tasks you will complete a short tutorial. \n \n Please tell the experimenter if you have any questions after the tutorials. \n \n  You will use the BUTTON BOX to respond. \n \n \n \n Press BUTTON 3 to continue.';
-    instr.B     = '--- 1. Face discrimination task --- \n \n \n \n On each trial, you will see a face on the screen. \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n Your task is to decide whether this face is rather \n \n angry/in a bad mood (BUTTON 1) or happy/in a good mood (BUTTON 4). \n \n You will have 2 seconds to respond. \n \n \n \n Let''s try it now. \n \n \n Press SPACE to see an example trial.';
-    instr.C     = 'Next, you will do a few practice trials. \n \n It may sometimes be difficult to decide whether the face is angry or happy. \n \n In these cases, please take your best guess and respond. \n \n There are no right or wrong answers; we are interested in learning how you perceive faces.\n \n \n \n Press SPACE to continue to the practice trials.';
-    instr.D     = 'You have completed the tutorial and will now go on to the main experiment. This will take about 5 minutes. \n \n \n \n Press SPACE to continue.';
+    instr.B     = '--- 1. Face discrimination task --- \n \n \n \n On each trial, you will see a face on the screen. \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n Your task is to decide whether this face is rather \n \n angry/in a bad mood (BUTTON 1) or happy/in a good mood (BUTTON 4). \n \n You will have 2 seconds to respond. \n \n \n \n Let''s try it now. \n \n \n Press BUTTON 3 to see an example trial.';
+    instr.C     = 'Next, you will do a few practice trials. \n \n It may sometimes be difficult to decide whether the face is angry or happy. \n \n In these cases, please take your best guess and respond. \n \n There are no right or wrong answers; we are interested in learning how you perceive faces.\n \n \n \n Press BUTTON 3 to continue to the practice trials.';
+    instr.D     = 'You have completed the tutorial and will now go on to the main experiment. This will take about 5 minutes. \n \n \n \n Press BUTTON 3 to continue.';
     instr.E     = 'Get ready…';
     
     instr.feedbackC = 'Correct!';

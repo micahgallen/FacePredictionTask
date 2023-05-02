@@ -588,15 +588,16 @@ try
     totalTargets    = sum(vars.targetTrialsArray(1, :));
     totalHits       = sum(vars.targetTrialsArray(3, :));
     percentDetected = totalHits/totalTargets * 100;
-    feedbackText = ['End of session. Close your eyes and relax while we set up the next scan...'];
+%     feedbackText = ['End of session. Close your eyes and relax while we set up the next scan...'];
+    feedbackText = ['End of session. The Learning Task will begin soon...'];
     feedbackTextExperimenter = ['End of session. Participant detected ', num2str(round(percentDetected)), '% of the targets!'];
     disp(feedbackTextExperimenter);
     
-    WaitSecs(1);
+    WaitSecs(3);
     Screen('FillRect', scr.win, scr.BackgroundGray, scr.winRect);
     DrawFormattedText(scr.win, feedbackText, 'center', 'center', scr.TextColour);
     [~, ~] = Screen('Flip', scr.win);
-    %     WaitSecs(3);
+    WaitSecs(3);
     
     %% EyeLink: experiment end
     if vars.useEyeLink

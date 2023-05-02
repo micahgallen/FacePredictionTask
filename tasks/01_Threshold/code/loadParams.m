@@ -104,11 +104,11 @@ if vars.language == 1       % English
             switch vars.InputDevice
                 
                 case 1 % Keyboard
-                    vars.InstructionTask = 'Decide if the face presented on each trial is angry/in a bad mood or happy/in a good mood. \n \n ANGRY - BUTTON 1                         HAPPY - BUTTON 4 \n \n \n \n Then, rate how confident you are in your choice using the buttons to move the slider. \n \n Press BUTTON to start.';
+                    vars.InstructionTask = 'Decide if the face presented on each trial is angry/in a bad mood or happy/in a good mood. \n \n ANGRY - BUTTON 1                         HAPPY - BUTTON 4 \n \n \n \n Then, rate how confident you are in your choice using the buttons to move the slider. \n \n Press BUTTON 3 to start.';
                     vars.InstructionConf = 'Rate your confidence using BUTTONS 1 and 4 to move the slider. Press BUTTON 3 to confirm.';
                     
                 case 2 % Mouse
-                    vars.InstructionTask = 'Decide if the face presented on each trial is angry/in a bad mood or happy/in a good mood. \n \n ANGRY - BUTTON 1                         HAPPY - BUTTON 4 \n \n \n \n Then, rate how confident you are in your choice using the mouse. \n \n Press SPACE to start.';
+                    vars.InstructionTask = 'Decide if the face presented on each trial is angry/in a bad mood or happy/in a good mood. \n \n ANGRY - BUTTON 1                         HAPPY - BUTTON 4 \n \n \n \n Then, rate how confident you are in your choice using the mouse. \n \n Press BUTTON 3 to start.';
                     vars.InstructionConf = 'Rate your confidence using the mouse. Left click to confirm.';
                     vars.ConfEndPoins = {'Guess', 'Very sure'};
             end
@@ -117,15 +117,15 @@ if vars.language == 1       % English
             switch vars.InputDevice
                 
                 case 1 % Keyboard
-                    vars.InstructionTask = 'Decide if the face presented on each trial is angry/in a bad mood or happy/in a good mood. \n \n ANGRY - BUTTON 1                         HAPPY - BUTTON 4 \n \n \n \n Press SPACE to start.';
+                    vars.InstructionTask = 'Decide if the face presented on each trial is angry/in a bad mood or happy/in a good mood. \n \n ANGRY - BUTTON 1                         HAPPY - BUTTON 4 \n \n \n \n Press BUTTON 3 to start.';
                 case 2 % Mouse
-                    vars.InstructionTask = 'Decide if the face presented on each trial is angry/in a bad mood or happy/in a good mood. \n \n ANGRY - BUTTON 1                         HAPPY - BUTTON 4 \n \n \n \n Press SPACE to start.';
+                    vars.InstructionTask = 'Decide if the face presented on each trial is angry/in a bad mood or happy/in a good mood. \n \n ANGRY - BUTTON 1                         HAPPY - BUTTON 4 \n \n \n \n Press BUTTON 3 to start.';
             end
             
     end
     vars.InstructionQ = 'Angry (L)     or     Happy (R)';
-    vars.InstructionPause = 'Take a short break... \n \n When you are ready to continue, press ''Space''...';
-    vars.InstructionEnd = 'You have completed the Face Discrimination task. \n \n Please take a short break. Do not press or click anything. \n \n \n \n In a minute, you will be able to continue with the Learning Task.';
+    vars.InstructionPause = 'Take a short break... \n \n When you are ready to continue, press ''BUTTON 3''...';
+    vars.InstructionEnd = 'You have completed the Face Discrimination task. \n \n Please take a short break. Do not press or click anything. \n \n \n \n In a minute, you will be able to continue with the Localizer Task.';
     % N.B. Text colour and size are set after Screen('Open') call
     
 elseif vars.language == 2       % Danish

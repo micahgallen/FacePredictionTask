@@ -24,7 +24,12 @@ while ((GetSecs - vars.PTOn) <= vars.PTRespT)
     
     switch vars.InputDevice
         
-        case 1 % Keyboard response
+        case 2 % Keyboard response
+
+            [~,~,keys.KeyCode] = KbCheck;
+            while (~any(keys.KeyCode)) && ((GetSecs - vars.PTOn) <= vars.PTRespT) % wait for press & response time
+                [~,~,keys.KeyCode] = KbCheck; % L [1 0 0], R [0 0 1]
+            end
             
             % KbCheck for response
             if keys.KeyCode(keys.Left)==1         % Angry
@@ -48,7 +53,7 @@ while ((GetSecs - vars.PTOn) <= vars.PTRespT)
             WaitSecs(0.001);
             
             
-        case 2 % Mouse
+        case 1 % Mouse
             
             [~,~,buttons] = GetMouse;
             while (~any(buttons)) && ((GetSecs - vars.PTOn) <= vars.PTRespT) % wait for press & response time
