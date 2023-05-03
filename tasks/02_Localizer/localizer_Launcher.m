@@ -26,6 +26,7 @@ function localizer_Launcher(scr, subNo, visitNo)
 %% Key flags
 vars.emulate     = 0;                % 0 scanning, 1 testing (stims only presented for .5s)
 vars.useEyeLink  = 0;                % 0 no, 1 yes
+vars.pptrigger   = 0;                % 0 no, 1 yes
 
 
 
@@ -84,7 +85,8 @@ vars.exptName = 'LocalizerCWT';
 % vars.DataFileName = [vars.exptName, vars.subIDstring];
 vars.CBFolder = fullfile('..', '..', 'data', ['sub_',vars.subIDstring], filesep);
 % addpath('C:\Users\stimuser.stimpc-08\Desktop\Ashley\CWT_behavioural');
-cbal = Counterbalance_img(vars.CBFolder);
+% cbal = Counterbalance_img(vars.CBFolder);
+cbal = Counterbalance_latinsq(vars.subIDstring, vars.visitNostr); %, vars.CBFolder);
 cbal_str = num2str(cbal);
 vars.DataFileName = strcat(vars.exptName, '_',vars.subIDstring, '_visit', vars.visitNostr, '_cbal', cbal_str);    % name of data file to write to
 vars.OutputFolder = fullfile('..', '..', 'data', ['sub_',vars.subIDstring], ['visit_', vars.visitNostr], filesep);
@@ -290,10 +292,19 @@ try
 %     if ~vars.emulate
 %         WaitSecs(vars.TR*vars.Dummies);end
     
+    if vars.pptrigger
+        sendTrigger = intialiseParallelPort();
+        sendTrigger(1) % 1 = start of experiment trigger
+        disp('Trigger received')
+    end
+
     if vars.useEyeLink
         Eyelink('message','STARTEXP');
     end
     
+    if vars.pptrigger
+        sendTrigger(0) % remember to manually pull down triggers
+    end
     
     %% Draw fixation screen - start
     scr = drawFixation(scr);
@@ -308,11 +319,23 @@ try
         %% Update the experimenter and send a message to EL
         startStimText = ['BlockStart_', num2str(thisBlock)];
         disp(startStimText);
+        
+        trigger_block = thisBlock + 20;
+
+        if vars.pptrigger
+            sendTrigger(trigger_block) % 20 + block_no = block start trigger
+            disp('Trigger received')
+        end
+        
         if vars.useEyeLink
             % EyeLink:  message
             Eyelink('message', startStimText);
         end
-        
+       
+        if vars.pptrigger
+            sendTrigger(0) % remember to manually pull down triggers
+        end
+
         %% Determine the stimulus
         % Which block is this?
         % 1-2 cues, 3-4 faces (happy, angry)[, 5 fixation]
@@ -342,12 +365,23 @@ try
                 Screen('DrawTexture', scr.win, ImTex);
                 [~, StimOn] = Screen('Flip', scr.win);
                 
+                trigger_stimno = thisStim + 40;
+
+                if vars.pptrigger
+                    sendTrigger(trigger_stimno) % 40 + stimrep_no = stimulus trigger
+                    disp('Trigger received')
+                end
+
                 if vars.useEyeLink
                     % EyeLink:  message
                     startStimText = ['StimStart_', num2str(thisStim)];
                     Eyelink('message', startStimText);
                 end
-                
+
+                if vars.pptrigger
+                    sendTrigger(0) % remember to manually pull down triggers
+                end
+
                 WaitSecs(vars.StimOn);
                 %% 0.2s fixation
                 % Is this a target?
@@ -362,26 +396,40 @@ try
                 
                 % Check for keypress
                 [ pressed, firstPress] = KbQueueCheck(deviceIndex);
-                
+
                 if pressed && (totalStimCounter ~= 1)
                     Results.task_press(totalStimCounter) = firstPress(keys.Left) - StartTime;
-                    
+
                     if firstPress(keys.Left) %firstPress(1)        %
                         vars.targetTrialsArray(2, totalStimCounter-1) = 1;
                         if vars.targetTrialsArray(1, totalStimCounter-1)
                             vars.targetTrialsArray(3, totalStimCounter-1) = 1;
+                            if vars.pptrigger
+                                sendTrigger(111) % 111 = target hit trigger
+                                disp('Trigger received')
+                            end
                             Results.task_hit(totalStimCounter) = firstPress(keys.Left) - StartTime;
                             disp('Target detected - hit');
+                            if vars.pptrigger
+                                sendTrigger(0) % remember to manually pull down triggers
+                            end
                         else
                             vars.targetTrialsArray(4, totalStimCounter-1) = 1;
+                            if vars.pptrigger
+                                sendTrigger(222) % 222 = false alarm trigger
+                                disp('Trigger received')
+                            end
                             Results.task_falseAlarm(totalStimCounter) = firstPress(keys.Left) - StartTime;
                             disp('False alarm');
+                            if vars.pptrigger
+                                sendTrigger(0) % remember to manually pull down triggers
+                            end
                         end
                     elseif firstPress(keys.Escape)
                         % Save results
                         save(strcat(vars.OutputFolder, ['Aborted_',vars.DataFileName]), 'Results', 'vars', 'scr', 'keys' );
                         disp(['Aborted! Results were saved as: ', ['Aborted_',vars.DataFileName]]);
-                        
+
                         % Clean up
                         KbQueueRelease(deviceIndex);
                         sca;
@@ -437,15 +485,26 @@ try
                 Screen('FillRect', scr.win, scr.BackgroundGray, scr.winRect);
                 Screen('DrawTexture', scr.win, ImTex);
                 [~, StimOn] = Screen('Flip', scr.win);
-                
+
+                trigger_stimno = thisStim + 40;
+
+                if vars.pptrigger
+                    sendTrigger(trigger_stimno) % 40 + stimrep_no = stimulus trigger
+                    disp('Trigger received')
+                end
+
                 if vars.useEyeLink
                     % EyeLink:  message
                     startStimText = ['StimStart_', num2str(thisStim)];
                     Eyelink('message', startStimText);
                 end
-                
+
+                if vars.pptrigger
+                    sendTrigger(0) % remember to manually pull down triggers
+                end
+
                 WaitSecs(vars.StimOn);
-                
+
                 %% 0.2s fixation
                 % Is this a target?
                 if vars.targetTrialsArray(1, totalStimCounter)
@@ -466,12 +525,26 @@ try
                         vars.targetTrialsArray(2, totalStimCounter-1) = 1;
                         if vars.targetTrialsArray(1, totalStimCounter-1)
                             vars.targetTrialsArray(3, totalStimCounter-1) = 1;
+                            if vars.pptrigger
+                                sendTrigger(111) % 111 = target hit trigger
+                                disp('Trigger received')
+                            end
                             Results.task_hit(totalStimCounter) = firstPress(keys.Left) - StartTime;
                             disp('Target detected - hit');
+                            if vars.pptrigger
+                                sendTrigger(0) % remember to manually pull down triggers
+                            end
                         else
                             vars.targetTrialsArray(4, totalStimCounter-1) = 1;
+                            if vars.pptrigger
+                                sendTrigger(222) % 222 = false alarm trigger
+                                disp('Trigger received')
+                            end
                             Results.task_falseAlarm(totalStimCounter) = firstPress(keys.Left) - StartTime;
                             disp('False alarm');
+                            if vars.pptrigger
+                                sendTrigger(0) % remember to manually pull down triggers
+                            end
                         end
                     elseif firstPress(keys.Escape)
                         % Save results
@@ -508,14 +581,23 @@ try
                 scr = drawFixation(scr);
                 [~, StimOn] = Screen('Flip', scr.win);
                 
+                if vars.pptrigger
+                    sendTrigger(60) % 60 = fixation trigger
+                    disp('Trigger received')
+                end
+
                 if vars.useEyeLink
                     % EyeLink:  message
                     startStimText = ['FixStart'];
                     Eyelink('message', startStimText);
                 end
-                
+
+                if vars.pptrigger
+                    sendTrigger(0) % remember to manually pull down triggers
+                end
+
                 WaitSecs(vars.StimOn);
-                
+
                 %% 0.2s fixation
                 % Is this a target?
                 if vars.targetTrialsArray(1, thisStim)
@@ -536,12 +618,26 @@ try
                         vars.targetTrialsArray(2, totalStimCounter-1) = 1;
                         if vars.targetTrialsArray(1, totalStimCounter-1)
                             vars.targetTrialsArray(3, totalStimCounter-1) = 1;
+                            if vars.pptrigger
+                                sendTrigger(111) % 111 = target hit trigger
+                                disp('Trigger received')
+                            end
                             Results.task_hit(totalStimCounter) = firstPress(keys.Left) - StartTime;
                             disp('Target detected - hit');
+                            if vars.pptrigger
+                                sendTrigger(0) % remember to manually pull down triggers
+                            end
                         else
                             vars.targetTrialsArray(4, totalStimCounter-1) = 1;
+                            if vars.pptrigger
+                                sendTrigger(222) % 222 = false alarm trigger
+                                disp('Trigger received')
+                            end
                             Results.task_falseAlarm(totalStimCounter) = firstPress(keys.Left) - StartTime;
                             disp('False alarm');
+                            if vars.pptrigger
+                                sendTrigger(0) % remember to manually pull down triggers
+                            end
                         end
                     elseif firstPress(keys.Escape)
                         % Save results
@@ -592,7 +688,14 @@ try
     feedbackText = ['End of session. The Learning Task will begin soon...'];
     feedbackTextExperimenter = ['End of session. Participant detected ', num2str(round(percentDetected)), '% of the targets!'];
     disp(feedbackTextExperimenter);
-    
+
+    if vars.pptrigger
+        sendTrigger(250) % 250 = end of experiment trigger
+        disp('Trigger received')
+
+        sendTrigger(0) % remember to manually pull down triggers
+    end
+
     WaitSecs(3);
     Screen('FillRect', scr.win, scr.BackgroundGray, scr.winRect);
     DrawFormattedText(scr.win, feedbackText, 'center', 'center', scr.TextColour);
@@ -639,7 +742,14 @@ catch ME
     if vars.useEyeLink
         ELshutdown(vars)
     end
-    
+
+    if vars.pptrigger
+        sendTrigger(250) % 250 = end of experiment trigger
+        disp('Trigger received')
+
+        sendTrigger(0) % remember to manually pull down triggers
+    end
+
     % Clean up
     KbQueueRelease(deviceIndex);
     rmpath(genpath('helpers'));

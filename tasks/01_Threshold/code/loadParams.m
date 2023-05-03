@@ -21,6 +21,7 @@ vars.RepeatMissedTrials = 1;            % Do we want to repeat any missed trials
 plotStaircase       = 0;
 vars.pluxSynch      = 1;
 vars.runFADtutorial = 1;
+vars.pptrigger      = 0;
 % vars.language       = 1;               	 % 1 English, 2 Danish
 
 

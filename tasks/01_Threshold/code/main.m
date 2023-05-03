@@ -132,17 +132,26 @@ try
         [~, ~, keys.KeyCode] = KbCheck;
         WaitSecs(0.001);
     end
-    
+
     Results.SessionStartT = GetSecs;            % session start = trigger 1 + dummy vols
     disp('Session started.');
-    
+
+    if vars.pptrigger
+        sendTrigger = intialiseParallelPort();
+        sendTrigger(1) % 1 = start of experiment trigger
+        disp('Trigger received')
+    end
+
     if useEyeLink
         Eyelink('message','STARTEXP');
     end
-    
-    
+
+    if vars.pptrigger
+        sendTrigger(0) % remember to manually pull down triggers
+    end
+
     tic
-    
+
     %% Run through trials
     WaitSecs(0.500);            % pause before experiment start
     thisTrial = 1;              % trial counter
@@ -152,12 +161,22 @@ try
     while endOfExpt ~= 1       % General stop flag for the loop
         
         Results.SOT_trial(thisTrial) = GetSecs;
+
+        if vars.pptrigger
+            sendTrigger(10) % 10 = start of trial trigger
+            disp('Trigger received')
+        end
+
         if useEyeLink
             % EyeLink:  this trial
             startStimText = ['Trial ' num2str(thisTrial) ' starts now'];
             Eyelink('message', startStimText); % Send message
         end
         
+        if vars.pptrigger
+            sendTrigger(0) % remember to manually pull down triggers
+        end
+
         %% Determine which stimulus to present, read in the image, adjust size and show stimulus
         % Which gender face to present on this trial?
         switch vars.faceGenderSwitch(thisTrial)
@@ -187,15 +206,30 @@ try
         [~, StimOn] = Screen('Flip', scr.win);
         
         Results.SOT_face(thisTrial) = GetSecs;
+
+        if vars.pptrigger
+            if thisTrialStim <= 100
+                sendTrigger(120) %  = ANGRY face trigger
+                disp('Trigger received')
+            elseif thisTrialStim > 100
+                sendTrigger(125) %  = HAPPY face trigger
+                disp('Trigger received')
+            end
+        end
+
         if useEyeLink
             % EyeLink:  face on
             startStimText = ['Trial ' num2str(thisTrial) ' face stim on'];
             Eyelink('message', startStimText); % Send message
         end
-        
+
+        if vars.pptrigger
+            sendTrigger(0) % remember to manually pull down triggers
+        end
+
         % While loop to show stimulus until StimT seconds elapsed.
         while (GetSecs - StimOn) <= vars.StimT
-            
+
             Screen('FillRect', scr.win, scr.BackgroundGray, scr.winRect);
             Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
             Screen('DrawTexture', scr.win, ImTex);
@@ -229,13 +263,22 @@ try
         
         Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
         [~, ~] = Screen('Flip', scr.win);            % clear screen
-        
+
+        if vars.pptrigger
+            sendTrigger(123) % 123 = face stim off trigger
+            disp('Trigger received')
+        end
+
         if useEyeLink
             % EyeLink:  face off
             startStimText = ['Trial ' num2str(thisTrial) ' face stim off'];
             Eyelink('message', startStimText); % Send message
         end
-        
+
+        if vars.pptrigger
+            sendTrigger(0) % remember to manually pull down triggers
+        end
+
         %% Show emotion prompt screen
         % Angry (L arrow) or Happy (R arrow)?
         Screen('FillRect', scr.win, scr.BackgroundGray, scr.winRect);
@@ -244,12 +287,21 @@ try
         
         [~, vars.StartRT] = Screen('Flip', scr.win);
         
+        if vars.pptrigger
+            sendTrigger(70) % 70 = emotion prompt trigger
+            disp('Trigger received')
+        end
+
         if useEyeLink
             % EyeLink:  face response
             startStimText = ['Trial ' num2str(thisTrial) ' face response screen on'];
             Eyelink('message', startStimText); % Send message
         end
-        
+
+        if vars.pptrigger
+            sendTrigger(0) % remember to manually pull down triggers
+        end
+
         % Fetch the participant's response, via keyboard or mouse
         [vars] = getResponse(keys, scr, vars);
         
@@ -340,12 +392,22 @@ try
         [~, StartITI] = Screen('Flip', scr.win);
         
         Results.SOT_ITI(thisTrial) = GetSecs;
+
+        if vars.pptrigger
+            sendTrigger(80) % 80 = ITI start trigger
+            disp('Trigger received')
+        end
+
         if useEyeLink
             % EyeLink:  ITI
             startStimText = ['Trial ' num2str(thisTrial) ' ITI start'];
             Eyelink('message', startStimText); % Send message
         end
         
+        if vars.pptrigger
+            sendTrigger(0) % remember to manually pull down triggers
+        end
+
         % Present the gray screen for ITI duration
         while (GetSecs - StartITI) <= vars.ITI(thisTrial)
             
@@ -390,12 +452,21 @@ try
         vars.ConfResp = NaN;
         Screen('Close', ImTex);
         
+        if vars.pptrigger
+            sendTrigger(180) % 180 = end of trial trigger
+            disp('Trigger received')
+        end
+
         if useEyeLink
             % EyeLink:  trial end
             startStimText = ['Trial ' num2str(thisTrial) ' ends now'];
             Eyelink('message', startStimText);          % Send message
         end
         
+        if vars.pptrigger
+            sendTrigger(0) % remember to manually pull down triggers
+        end
+
     end%thisTrial
     
     Results.SessionEndT = GetSecs - Results.SessionStartT;

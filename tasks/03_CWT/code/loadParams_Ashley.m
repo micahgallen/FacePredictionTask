@@ -1,12 +1,12 @@
 %% Define parameters
 %
-% Project: CWT task, for fMRI
+% Project: CWT task, for MEG
 %
-% Sets key parameters, called by main_Ashley.m
+% Sets key parameters, called by main_Ashley_scanner.m
 %
 % Created by Niia Nikolova
 % Edited by Ashley Tyrer
-% Last edit: 01/02/2023
+% Last edit: 02/05/2023
 
 global language
 vars.language = language;
@@ -18,6 +18,7 @@ vars.InputDevice    = 2;                % Response method for conf rating. 1 - k
 useEyeLink          = 0;                % Use EyeLink to record gaze & pupil?
 vars.fixCrossFlag   = 1;
 vars.pluxSynch      = 1;
+vars.pptrigger      = 0;
 vars.runCWTtutorial = 1;
 % vars.language       = 1;
 
@@ -142,11 +143,11 @@ vars.RepeatMissedTrials = 0;
 vars.CueT               = .5;
 vars.StimT              = .5;   % sec
 vars.RespT              = 2;    % sec
-vars.ConfT              = 3;    % sec
+vars.ConfT              = 4;    % 3 % sec
 vars.PTRespT            = 3;    % sec  2
 vars.PTTotT             = 4;    % sec  3
-vars.ISI_min            = 2;    % long variable ISI, 2-3 or 2-4 sec
-vars.ISI_max            = 3;
+vars.ISI_min            = 1;    % 2 % long variable ISI, 2-3 or 2-4 sec
+vars.ISI_max            = 2;    % 3
 vars.ISI                = randInRange(vars.ISI_min, vars.ISI_max, [vars.NTrialsTotal,1]);
 vars.ITI_min            = 1;    % short variable ITI
 vars.ITI_max            = 2;

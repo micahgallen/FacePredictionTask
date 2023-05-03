@@ -8,7 +8,12 @@ function experimentEnd(keys, Results, scr, vars)
 
 %
 % Niia Nikolova
-% Last edit: 20/07/2020
+% Edited by Ashley Tyrer
+% Last edit: 03/05/2023
+
+if vars.pptrigger
+    sendTrigger = intialiseParallelPort();
+end
 
 if isfield(vars,'Aborted') || isfield(vars,'Error')
     if vars.Aborted
@@ -17,9 +22,17 @@ if isfield(vars,'Aborted') || isfield(vars,'Error')
             Screen('FillRect', scr.win, scr.BackgroundGray, scr.winRect);
             DrawFormattedText(scr.win, 'Experiment aborted. Exiting...', 'center', 'center', scr.TextColour);
             [~, ~] = Screen('Flip', scr.win);
+
+            if vars.pptrigger
+                sendTrigger(250) % 250 = end of experiment trigger
+                disp('Trigger received')
+
+                sendTrigger(0) % remember to manually pull down triggers
+            end
+
             WaitSecs(3);
         end
-        
+
         %     ListenChar(0);
         ShowCursor;
         sca;
@@ -40,6 +53,14 @@ if isfield(vars,'Aborted') || isfield(vars,'Error')
             Screen('FillRect', scr.win, scr.BackgroundGray, scr.winRect);
             DrawFormattedText(scr.win, 'Error. Exiting... ', 'center', 'center', scr.TextColour);
             [~, ~] = Screen('Flip', scr.win);
+
+            if vars.pptrigger
+                sendTrigger(250) % 250 = end of experiment trigger
+                disp('Trigger received')
+
+                sendTrigger(0) % remember to manually pull down triggers
+            end
+
             WaitSecs(3);
         end
         
@@ -68,9 +89,17 @@ if vars.RunSuccessfull  % Successfull run
     Screen('FillRect', scr.win, scr.BackgroundGray, scr.winRect);
     DrawFormattedText(scr.win, vars.InstructionEnd, 'center', 'center', scr.TextColour);
     [~, ~] = Screen('Flip', scr.win);
+
+    if vars.pptrigger
+        sendTrigger(250) % 250 = end of experiment trigger
+        disp('Trigger received')
+
+        sendTrigger(0) % remember to manually pull down triggers
+    end
+
     WaitSecs(6);
     sca
-    
+
     % Save the data
     save(strcat(vars.OutputFolder, vars.DataFileName), 'Results', 'vars', 'scr', 'keys' );
     disp(['Run complete. Results were saved as: ', vars.DataFileName]);

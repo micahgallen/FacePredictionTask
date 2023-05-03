@@ -10,12 +10,22 @@ function experimentEnd(vars, scr, keys, Results, stair)
 % Niia Nikolova
 % Last edit: 20/07/2020
 
+if vars.pptrigger
+    sendTrigger = intialiseParallelPort();
+end
+
 if isfield(vars,'Aborted') || isfield(vars,'Error')
     if vars.Aborted
         % Abort screen
         Screen('FillRect', scr.win, scr.BackgroundGray, scr.winRect);
         DrawFormattedText(scr.win, 'Run aborted...', 'center', 'center', scr.TextColour);
         [~, ~] = Screen('Flip', scr.win);
+        if vars.pptrigger
+            sendTrigger(250) % 250 = end of experiment trigger
+            disp('Trigger received')
+
+            sendTrigger(0) % remember to manually pull down triggers
+        end
         WaitSecs(3);
         ShowCursor;
 %         sca;
@@ -37,6 +47,12 @@ if isfield(vars,'Aborted') || isfield(vars,'Error')
         Screen('FillRect', scr.win, scr.BackgroundGray, scr.winRect);
         DrawFormattedText(scr.win, 'Run error...', 'center', 'center', scr.TextColour);
         [~, ~] = Screen('Flip', scr.win);
+        if vars.pptrigger
+            sendTrigger(250) % 250 = end of experiment trigger
+            disp('Trigger received')
+
+            sendTrigger(0) % remember to manually pull down triggers
+        end
         WaitSecs(3);
         ShowCursor;
 %         sca;
@@ -61,6 +77,12 @@ if vars.RunSuccessfull      % Successfull run
     Screen('FillRect', scr.win, scr.BackgroundGray, scr.winRect);
     DrawFormattedText(scr.win, vars.InstructionEnd, 'center', 'center', scr.TextColour);
     [~, ~] = Screen('Flip', scr.win);
+    if vars.pptrigger
+        sendTrigger(250) % 250 = end of experiment trigger
+        disp('Trigger received')
+
+        sendTrigger(0) % remember to manually pull down triggers
+    end
     WaitSecs(3);
     ShowCursor;
 %     sca;

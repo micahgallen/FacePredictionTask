@@ -115,6 +115,7 @@ stepSize      = 1;
 categorical_slider = 0;
 trigger_rect  = [0; 0; 1; 1];
 colour_rect   = [0 0 0];
+pptrigger     = 0;
 
 i = 1;
 while(i<=length(varargin))
@@ -190,12 +191,20 @@ while(i<=length(varargin))
             i             = i + 1;
             colour_rect  = varargin{i};
             i             = i + 1;
+        case 'pptrigger'
+            i                       = i + 1;
+            pptrigger      = varargin{i};
+            i                       = i + 1;
     end
 end
 
 % Sets the default key depending on choosen device
 if strcmp(device, 'mouse')
     mouseButton   = 1; % X mouse button
+end
+
+if pptrigger
+    sendTrigger = intialiseParallelPort();
 end
 
 %% Checking number of screens and parsing size of the global screen
@@ -267,8 +276,22 @@ while answer == 0
         [~, ~, keyCode] = KbCheck;
         if keyCode(responseKeys.Two) == 1
             x = x - stepSize; % Goes stepSize pixel to the left
+            
+            if pptrigger
+                sendTrigger(130) % 130 = confidence slider LEFT trigger
+                disp('Trigger received')
+        
+                sendTrigger(0) % remember to manually pull down triggers
+            end
         elseif keyCode(responseKeys.Three) == 1
             x = x + stepSize; % Goes stepSize pixel to the right
+            
+            if pptrigger
+                sendTrigger(135) % 135 = confidence slider RIGHT trigger
+                disp('Trigger received')
+        
+                sendTrigger(0) % remember to manually pull down triggers
+            end
         end
     else
         error('Unknown device');
@@ -343,11 +366,26 @@ while answer == 0
         end
         if keyCode(responseKeys.One) == 1
             answer = 1;
+
+            if pptrigger
+                sendTrigger(140) % 140 = confidence confirmation trigger
+                disp('Trigger received')
+        
+                sendTrigger(0) % remember to manually pull down triggers
+            end
+
         end
     end
     
     % Abort if answer takes too long
     if secs - t0 > aborttime 
+        if pptrigger
+            sendTrigger(145) % 145 = confidence timeout trigger
+            disp('Trigger received')
+
+            sendTrigger(0) % remember to manually pull down triggers
+        end
+        answer = 1; % should we record confidence anyway, even if they don't confirm?
         break
     end
 end

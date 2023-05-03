@@ -756,7 +756,7 @@ try
                 [~, StartITI_PT] = Screen('Flip', scr.win);
                 
                 if vars.pptrigger
-                    sendTrigger(90) % 90 = prediction trial off trigger
+                    sendTrigger() %  = prediction trial off trigger
                     disp('Trigger received')
                 end
                 

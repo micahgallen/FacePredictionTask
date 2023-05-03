@@ -19,6 +19,9 @@ function [vars] = getResponsePT(keys, scr, vars)
 % Last edit: 21/07/2020
 
 feedbackString = 'O';
+if vars.pptrigger
+    sendTrigger = intialiseParallelPort();
+end
 % loop until valid key is pressed or RespT is reached
 while ((GetSecs - vars.PTOn) <= vars.PTRespT)     
     
@@ -36,11 +39,21 @@ while ((GetSecs - vars.PTOn) <= vars.PTRespT)
                 % update results
                 vars.Resp = 0;
                 vars.ValidTrial(1) = 1;
+
+                if vars.pptrigger
+                    sendTrigger(160) % 160 = ANGRY prediction trigger
+                    disp('Trigger received')
+                end
                 
             elseif keys.KeyCode(keys.Right)==1    % Happy
                 % update results
                 vars.Resp = 1;
                 vars.ValidTrial(1) = 1;
+
+                if vars.pptrigger
+                    sendTrigger(165) % 165 = HAPPY prediction trigger
+                    disp('Trigger received')
+                end
                 
             elseif keys.KeyCode(keys.Escape)==1
                 vars.abortFlag = 1;
@@ -51,6 +64,10 @@ while ((GetSecs - vars.PTOn) <= vars.PTRespT)
             
             [~, vars.PTEndResp, keys.KeyCode] = KbCheck;
             WaitSecs(0.001);
+
+            if vars.pptrigger
+                sendTrigger(0) % remember to manually pull down triggers
+            end
             
             
         case 1 % Mouse

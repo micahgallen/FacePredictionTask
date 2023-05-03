@@ -20,6 +20,9 @@ function [vars] = getResponse(keys, scr, vars)
 
 feedbackString = 'O';
 postResponseInt = 0.3;      %  pause for 300ms after response
+if vars.pptrigger
+    sendTrigger = intialiseParallelPort();
+end
 
 % loop until valid key is pressed or RespT is reached
 while ((GetSecs - vars.StartRT) <= vars.RespT)
@@ -39,10 +42,20 @@ while ((GetSecs - vars.StartRT) <= vars.RespT)
                 vars.Resp = 0;
                 vars.ValidTrial(1) = 1;
 
+                if vars.pptrigger
+                    sendTrigger(110) % 110 = ANGRY response trigger
+                    disp('Trigger received')
+                end
+
             elseif keys.KeyCode(keys.Right)==1    % Happy
                 % update results
                 vars.Resp = 1;
                 vars.ValidTrial(1) = 1;
+
+                if vars.pptrigger
+                    sendTrigger(115) % 115 = HAPPY response trigger
+                    disp('Trigger received')
+                end
                 
             elseif keys.KeyCode(keys.Escape)==1
                 vars.abortFlag = 1;
@@ -51,6 +64,10 @@ while ((GetSecs - vars.StartRT) <= vars.RespT)
                 % ? DrawText: Please press a valid key...
             end
             
+            if vars.pptrigger
+                sendTrigger(0) % remember to manually pull down triggers
+            end
+
             [~, vars.EndRT, keys.KeyCode] = KbCheck;
             WaitSecs(0.001);
             
