@@ -196,7 +196,7 @@ if vars.language == 1       % English
                     
                 case 2 % Mouse
                     vars.InstructionTask = 'Decide if the cue is predicting an angry or happy face on each trial. \n \n ANGRY - BUTTON 1                         HAPPY - BUTTON 4 \n \n \n \n Then, rate how confident you are in your choice using BUTTONS 1 and 4. \n \n Press BUTTON 3 to start...';
-                    vars.InstructionConf = 'How confident are you in your choice?. Use the button box to confirm.';
+                    vars.InstructionConf = 'How confident are you in your choice? Use the button box to confirm.';
                     vars.ConfEndPoins = {'Guess', 'Certain'};
             end
         case 0

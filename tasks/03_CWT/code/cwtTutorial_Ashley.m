@@ -56,10 +56,10 @@ tutorialGenders = round(rand(1,nTrialsCWT));
 % Instructions
 if vars.language == 1       % English
     instr.A     = sprintf('--- 3. Learning task --- \n \n \n \n On each trial, you will first see a picture of either %s or a %s (a cue). \n \n Then you must predict whether the face you will see next is angry or happy (by pressing the BUTTONS 1 / 4, just as in the Face Discrimination task). \n \n \n \n You will then be shown either an angry or happy face. Press BUTTON 3 to see an example trial.', cue_names{3}, cue_names{2});
-    instr.B     = 'After each trial, you will rate how confident you felt in your choice by using a slider scale. Use BUTTONS 1 and 4 to move the slider, and BUTTON 3 to confirm your rating. You will have 3 seconds to respond. \n \n Let''s try a trial with a confidence rating. \n \n \n \n Press BUTTON 3 to continue.';
+    instr.B     = 'After each trial, you will rate how confident you felt in your choice by using a slider scale. Use BUTTONS 1 and 4 to move the slider, and BUTTON 3 to confirm your rating. You will have 4 seconds to respond. \n \n Let''s try a trial with a confidence rating. \n \n \n \n Press BUTTON 3 to continue.';
     instr.C     = 'Great! In addition to this, there is a learning component to the task. There is a relationship between the cues and the faces in such a way that a given cue predicts the emotion of the face that will follow it. \n \n \n \n Press BUTTON 3 to continue. ';
     instr.D     = sprintf('For example, the %s cue might start out predicting an angry face, while the %s predicts a happy face. Crucially, these predictive associations will change over the course of the session. So the %s may eventually go on to predict happy faces, then again angry, and so on. Note that although the cues predict face emotions with some certainty, this is not 100%%. This means that there may be some trials that do not go with the current relationship. \n \n \n \n Press BUTTON 3 to practice a few more trials.', cue_names{1}, cue_names{2}, cue_names{1});
-    instr.E     = sprintf('We would like you to try to learn what the associations are at any given time. In order to see how you learn the associations, there are some trials which ask you to indicate which face emotion a given cue is currently predicting. For example, ,Is the %s predicting Angry (L) or Happy (R) faces? . On these trials, please use response buttons 1 and 4 to answer what you think the association is. \n \n \n \n Press BUTTON 3 to see a prediction trial.', cue_names{1});
+    instr.E     = sprintf('We would like you to try to learn what the associations are at any given time. In order to see how you learn the associations, there are some trials which ask you to indicate which face emotion a given cue is currently predicting. For example, is the %s predicting Angry (L) or Happy (R) faces? On these trials, please use response buttons 1 and 4 to answer what you think the association is. \n \n \n \n Press BUTTON 3 to see a prediction trial.', cue_names{1});
     instr.F     = 'Now you will do a few practice trials. \n \n \n \n Press BUTTON 3 to continue.';
     instr.G     = 'You have completed the tutorial and will now go on to the main experiment. This will take about 40 minutes. \n \n \n \n You will have several opportunities to take breaks. \n \n \n \n Press BUTTON 3 to continue.';
     instr.H     = 'Get ready…';
@@ -326,57 +326,57 @@ try
         
     end
     
-    %% Introduce prediction trial
-    showInstruction(scr, keys, instr.E);
-     
-    Screen('FillRect', scr.win, scr.BackgroundGray, scr.winRect);
-    Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
-    DrawFormattedText(scr.win, [vars.PTTitle], 'center', ((scr.winRect(4)/2)-6*(scr.winRect(4)/8)), scr.TextColour);
-    DrawFormattedText(scr.win, vars.PTQuestion, 'center', ((scr.winRect(4)/2)-(scr.winRect(4)/4)), scr.TextColour);
-    [~, ~] = Screen('Flip', scr.win);
-    WaitSecs(0.2);
-    
-    % Present cue + prediciton trial text
-    thisCue = tutorialCues(1);
-    thisTrialCue = ['cue_', num2str(cbal), '_', num2str(thisCue), '.tif'];
-    new_line;
-
-    % Read stim image for this trial into matrix 'imdata'
-    CueFilePath = strcat(vars.StimFolder, thisTrialCue);
-    ImDataOrig = imread(char(CueFilePath));
-    ImData = imresize(ImDataOrig, [vars.StimSizePix NaN]);           % Adjust image size to StimSize dva in Y dir
-    ImTex = Screen('MakeTexture', scr.win, ImData);
-    
-    % Draw texture image to backbuffer
-    Screen('FillRect', scr.win, scr.BackgroundGray, scr.winRect);
-    Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
-    Screen('DrawTexture', scr.win, ImTex);
-    DrawFormattedText(scr.win, [vars.PTTitle], 'center', ((scr.winRect(4)/2)-6*(scr.winRect(4)/8)), scr.TextColour);
-    DrawFormattedText(scr.win, [vars.PTQuestion], 'center', ((scr.winRect(4)/2)-(scr.winRect(4)/4)), scr.TextColour);
-    [~, vars.PTOn] = Screen('Flip', scr.win);
-    
-    % Fetch the participant's response, via keyboard or mouse
-    [vars] = getResponsePT(keys, scr, vars);
-    
-    % Show a fixation for the remainder of the 3sec
-    while (GetSecs - vars.PTOn) <= (vars.PTTotT) %3sec total
-        
-        Screen('FillRect', scr.win, scr.BackgroundGray, scr.winRect);
-        Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
-        if vars.fixCrossFlag
-            scr = drawFixation(scr);end
-        Screen('Flip', scr.win);
-        
-        if keys.KeyCode(keys.Escape)==1
-            % set tutorialAbort to 1
-            tutorialAbort = 1;
-            return
-        end
-        [~, ~, keys.KeyCode] = KbCheck;
-        WaitSecs(0.001);
-        
-    end
-    Screen('Close', ImTex);
+%     %% Introduce prediction trial
+%     showInstruction(scr, keys, instr.E);
+%      
+%     Screen('FillRect', scr.win, scr.BackgroundGray, scr.winRect);
+%     Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
+%     DrawFormattedText(scr.win, [vars.PTTitle], 'center', ((scr.winRect(4)/2)-6*(scr.winRect(4)/8)), scr.TextColour);
+%     DrawFormattedText(scr.win, vars.PTQuestion, 'center', ((scr.winRect(4)/2)-(scr.winRect(4)/4)), scr.TextColour);
+%     [~, ~] = Screen('Flip', scr.win);
+%     WaitSecs(0.2);
+%     
+%     % Present cue + prediciton trial text
+%     thisCue = tutorialCues(1);
+%     thisTrialCue = ['cue_', num2str(cbal), '_', num2str(thisCue), '.tif'];
+%     new_line;
+% 
+%     % Read stim image for this trial into matrix 'imdata'
+%     CueFilePath = strcat(vars.StimFolder, thisTrialCue);
+%     ImDataOrig = imread(char(CueFilePath));
+%     ImData = imresize(ImDataOrig, [vars.StimSizePix NaN]);           % Adjust image size to StimSize dva in Y dir
+%     ImTex = Screen('MakeTexture', scr.win, ImData);
+%     
+%     % Draw texture image to backbuffer
+%     Screen('FillRect', scr.win, scr.BackgroundGray, scr.winRect);
+%     Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
+%     Screen('DrawTexture', scr.win, ImTex);
+%     DrawFormattedText(scr.win, [vars.PTTitle], 'center', ((scr.winRect(4)/2)-6*(scr.winRect(4)/8)), scr.TextColour);
+%     DrawFormattedText(scr.win, [vars.PTQuestion], 'center', ((scr.winRect(4)/2)-(scr.winRect(4)/4)), scr.TextColour);
+%     [~, vars.PTOn] = Screen('Flip', scr.win);
+%     
+%     % Fetch the participant's response, via keyboard or mouse
+%     [vars] = getResponsePT(keys, scr, vars);
+%     
+%     % Show a fixation for the remainder of the 3sec
+%     while (GetSecs - vars.PTOn) <= (vars.PTTotT) %3sec total
+%         
+%         Screen('FillRect', scr.win, scr.BackgroundGray, scr.winRect);
+%         Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
+%         if vars.fixCrossFlag
+%             scr = drawFixation(scr);end
+%         Screen('Flip', scr.win);
+%         
+%         if keys.KeyCode(keys.Escape)==1
+%             % set tutorialAbort to 1
+%             tutorialAbort = 1;
+%             return
+%         end
+%         [~, ~, keys.KeyCode] = KbCheck;
+%         WaitSecs(0.001);
+%         
+%     end
+%     Screen('Close', ImTex);
     
     
     

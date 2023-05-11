@@ -682,147 +682,147 @@ try
             sendTrigger(0) % remember to manually pull down triggers
         end
 
-        %% Is this trial followed by a prediction trial?
-        if vars.predictionTrialNext(thisTrial)
-            % First present the prompt, then the cue
-            Screen('FillRect', scr.win, scr.BackgroundGray, scr.winRect);
-            Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
-            DrawFormattedText(scr.win, [vars.PTTitle], 'center', ((scr.winRect(4)/2)-6*(scr.winRect(4)/8)), scr.TextColour);
-            DrawFormattedText(scr.win, vars.PTQuestion, 'center', ((scr.winRect(4)/2)-(scr.winRect(4)/4)), scr.TextColour);
-            [~, ~] = Screen('Flip', scr.win);
-            WaitSecs(0.2);
-            
-            % Present cue + prediciton trial text
-            thisCue = vars.PTwhichCue(thisPT);
-            thisTrialCue = ['cue_', num2str(cbal), '_', num2str(thisCue), '.tif'];
-            new_line;
-            disp(['Prediction trial # ', num2str(thisPT), '. Cue: ', thisTrialCue]);
-            if vars.cue0Prediction(thisTrial) == 0 % non-predictive
-                worldTypeString = 'non-predictive';
-            elseif vars.cue0Prediction(thisTrial) == 1 % cue_0 -> Happy
-                worldTypeString = 'cue_0 -> Happy';
-            elseif vars.cue0Prediction(thisTrial) == 2 % cue_0 -> Angry
-                worldTypeString = 'cue_0 -> Angry';
-            end
-            disp(['The current block is: ', worldTypeString]);
-            
-            % Read stim image for this trial into matrix 'imdata'
-            CueFilePath = strcat(vars.StimFolder, thisTrialCue);
-            ImDataOrig = imread(char(CueFilePath));
-            ImData = imresize(ImDataOrig, [StimSizePix NaN]);           % Adjust image size to StimSize dva in Y dir
-            
-            % Make texture image out of image matrix 'imdata'
-            ImTex = Screen('MakeTexture', scr.win, ImData);
-            
-            % Draw texture image to backbuffer
-            Screen('FillRect', scr.win, scr.BackgroundGray, scr.winRect);
-            Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
-            Screen('DrawTexture', scr.win, ImTex);
-            DrawFormattedText(scr.win, [vars.PTTitle], 'center', ((scr.winRect(4)/2)-6*(scr.winRect(4)/8)), scr.TextColour);
-            DrawFormattedText(scr.win, [vars.PTQuestion], 'center', ((scr.winRect(4)/2)-(scr.winRect(4)/4)), scr.TextColour);
-
-            [~, vars.PTOn] = Screen('Flip', scr.win);
-            
-            Results.SOT_PT(thisTrial) = vars.PTOn - Results.SessionStartT;
-            
-            if vars.pptrigger
-                sendTrigger(150) % 150 = prediction trial trigger
-                disp('Trigger received')
-            end
-            
-            if useEyeLink
-                % EyeLink:  cue on
-                startStimText = ['Trial ' num2str(thisTrial) ' PT on'];
-                Eyelink('message', startStimText);
-            end
-            
-            if vars.pptrigger
-                sendTrigger(0) % remember to manually pull down triggers
-            end
-
-            % Fetch the participant's response, via keyboard or mouse
-            [vars] = getResponsePT(keys, scr, vars);
-            Results.SOT_PTResp(thisTrial) = vars.PTEndResp - Results.SessionStartT;
-           
-            
-            %% Show a fixation for the remainder of the 3sec
-            StartITI_PT = GetSecs;
-            while (GetSecs - vars.PTOn) <= (vars.PTTotT) %3sec total
-                
-                Screen('FillRect', scr.win, scr.BackgroundGray, scr.winRect);
-                Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
-                if vars.fixCrossFlag
-                    scr = drawFixation(scr);end
-                [~, StartITI_PT] = Screen('Flip', scr.win);
-                
-                if vars.pptrigger
-                    sendTrigger(90) % 90 = prediction trial off trigger
-                    disp('Trigger received')
-                end
-                
-                if useEyeLink
-                    % EyeLink:  cue off
-                    startStimText = ['Trial ' num2str(thisTrial) ' PT off'];
-                    Eyelink('message', startStimText);
-                end
-
-                if vars.pptrigger
-                    sendTrigger(0) % remember to manually pull down triggers
-                end
-
-            end
-            Results.SOT_PTEnd(thisTrial) = StartITI_PT - Results.SessionStartT; 
-            
-            % Compute response time
-            RT = (vars.PTEndResp - vars.PTOn);
-            
-            % Recode the accuracy:
-            if (vars.PTwhichCue(thisPT)==0)
-                if (vars.cue0Prediction(thisTrial) == 1)% cue 0, & cue0->happy
-                    if vars.Resp == 1 % Happy
-                        PTcorrect = 1;
-                    elseif vars.Resp == 0 % Angry
-                        PTcorrect = 0;
-                    end
-                elseif (vars.cue0Prediction(thisTrial) == 2)% cue 0 & cue0->Angry
-                    if vars.Resp == 1 % Happy
-                        PTcorrect = 0;
-                    elseif vars.Resp == 0 % Angry
-                        PTcorrect = 1;
-                    end
-                elseif (vars.cue0Prediction(thisTrial) == 0)
-                    PTcorrect = NaN;
-                end
-                
-            elseif (vars.PTwhichCue(thisPT)==1)     % cue_1
-                if (vars.cue0Prediction(thisTrial) == 1)% cue 1, & cue1->angry
-                    if vars.Resp == 1 % Happy
-                        PTcorrect = 0;
-                    elseif vars.Resp == 0 % Angry
-                        PTcorrect = 1;
-                    end
-                elseif (vars.cue0Prediction(thisTrial) == 2)% cue 1 & cue1->happy
-                    if vars.Resp == 1 % Happy
-                        PTcorrect = 1;
-                    elseif vars.Resp == 0 % Angry
-                        PTcorrect = 0;
-                    end
-                elseif (vars.cue0Prediction(thisTrial) == 0)
-                    PTcorrect = NaN;
-                end
-            end
-            
-            % Write trial result to file
-            Results.PTResp(thisTrial) = vars.Resp;
-            Results.PTAcc(thisTrial) = PTcorrect;
-            Results.PTRT(thisTrial) = RT;
-            
-            Screen('Close', ImTex);                      % Close the image texture
-            
-            % Increment predictive trial counter
-            thisPT = thisPT + 1;
-            
-        end%predictionTrial
+%         %% Is this trial followed by a prediction trial?
+%         if vars.predictionTrialNext(thisTrial)
+%             % First present the prompt, then the cue
+%             Screen('FillRect', scr.win, scr.BackgroundGray, scr.winRect);
+%             Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
+%             DrawFormattedText(scr.win, [vars.PTTitle], 'center', ((scr.winRect(4)/2)-6*(scr.winRect(4)/8)), scr.TextColour);
+%             DrawFormattedText(scr.win, vars.PTQuestion, 'center', ((scr.winRect(4)/2)-(scr.winRect(4)/4)), scr.TextColour);
+%             [~, ~] = Screen('Flip', scr.win);
+%             WaitSecs(0.2);
+%             
+%             % Present cue + prediciton trial text
+%             thisCue = vars.PTwhichCue(thisPT);
+%             thisTrialCue = ['cue_', num2str(cbal), '_', num2str(thisCue), '.tif'];
+%             new_line;
+%             disp(['Prediction trial # ', num2str(thisPT), '. Cue: ', thisTrialCue]);
+%             if vars.cue0Prediction(thisTrial) == 0 % non-predictive
+%                 worldTypeString = 'non-predictive';
+%             elseif vars.cue0Prediction(thisTrial) == 1 % cue_0 -> Happy
+%                 worldTypeString = 'cue_0 -> Happy';
+%             elseif vars.cue0Prediction(thisTrial) == 2 % cue_0 -> Angry
+%                 worldTypeString = 'cue_0 -> Angry';
+%             end
+%             disp(['The current block is: ', worldTypeString]);
+%             
+%             % Read stim image for this trial into matrix 'imdata'
+%             CueFilePath = strcat(vars.StimFolder, thisTrialCue);
+%             ImDataOrig = imread(char(CueFilePath));
+%             ImData = imresize(ImDataOrig, [StimSizePix NaN]);           % Adjust image size to StimSize dva in Y dir
+%             
+%             % Make texture image out of image matrix 'imdata'
+%             ImTex = Screen('MakeTexture', scr.win, ImData);
+%             
+%             % Draw texture image to backbuffer
+%             Screen('FillRect', scr.win, scr.BackgroundGray, scr.winRect);
+%             Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
+%             Screen('DrawTexture', scr.win, ImTex);
+%             DrawFormattedText(scr.win, [vars.PTTitle], 'center', ((scr.winRect(4)/2)-6*(scr.winRect(4)/8)), scr.TextColour);
+%             DrawFormattedText(scr.win, [vars.PTQuestion], 'center', ((scr.winRect(4)/2)-(scr.winRect(4)/4)), scr.TextColour);
+% 
+%             [~, vars.PTOn] = Screen('Flip', scr.win);
+%             
+%             Results.SOT_PT(thisTrial) = vars.PTOn - Results.SessionStartT;
+%             
+%             if vars.pptrigger
+%                 sendTrigger(150) % 150 = prediction trial trigger
+%                 disp('Trigger received')
+%             end
+%             
+%             if useEyeLink
+%                 % EyeLink:  cue on
+%                 startStimText = ['Trial ' num2str(thisTrial) ' PT on'];
+%                 Eyelink('message', startStimText);
+%             end
+%             
+%             if vars.pptrigger
+%                 sendTrigger(0) % remember to manually pull down triggers
+%             end
+% 
+%             % Fetch the participant's response, via keyboard or mouse
+%             [vars] = getResponsePT(keys, scr, vars);
+%             Results.SOT_PTResp(thisTrial) = vars.PTEndResp - Results.SessionStartT;
+%            
+%             
+%             %% Show a fixation for the remainder of the 3sec
+%             StartITI_PT = GetSecs;
+%             while (GetSecs - vars.PTOn) <= (vars.PTTotT) %3sec total
+%                 
+%                 Screen('FillRect', scr.win, scr.BackgroundGray, scr.winRect);
+%                 Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
+%                 if vars.fixCrossFlag
+%                     scr = drawFixation(scr);end
+%                 [~, StartITI_PT] = Screen('Flip', scr.win);
+%                 
+%                 if vars.pptrigger
+%                     sendTrigger(90) % 90 = prediction trial off trigger
+%                     disp('Trigger received')
+%                 end
+%                 
+%                 if useEyeLink
+%                     % EyeLink:  cue off
+%                     startStimText = ['Trial ' num2str(thisTrial) ' PT off'];
+%                     Eyelink('message', startStimText);
+%                 end
+% 
+%                 if vars.pptrigger
+%                     sendTrigger(0) % remember to manually pull down triggers
+%                 end
+% 
+%             end
+%             Results.SOT_PTEnd(thisTrial) = StartITI_PT - Results.SessionStartT; 
+%             
+%             % Compute response time
+%             RT = (vars.PTEndResp - vars.PTOn);
+%             
+%             % Recode the accuracy:
+%             if (vars.PTwhichCue(thisPT)==0)
+%                 if (vars.cue0Prediction(thisTrial) == 1)% cue 0, & cue0->happy
+%                     if vars.Resp == 1 % Happy
+%                         PTcorrect = 1;
+%                     elseif vars.Resp == 0 % Angry
+%                         PTcorrect = 0;
+%                     end
+%                 elseif (vars.cue0Prediction(thisTrial) == 2)% cue 0 & cue0->Angry
+%                     if vars.Resp == 1 % Happy
+%                         PTcorrect = 0;
+%                     elseif vars.Resp == 0 % Angry
+%                         PTcorrect = 1;
+%                     end
+%                 elseif (vars.cue0Prediction(thisTrial) == 0)
+%                     PTcorrect = NaN;
+%                 end
+%                 
+%             elseif (vars.PTwhichCue(thisPT)==1)     % cue_1
+%                 if (vars.cue0Prediction(thisTrial) == 1)% cue 1, & cue1->angry
+%                     if vars.Resp == 1 % Happy
+%                         PTcorrect = 0;
+%                     elseif vars.Resp == 0 % Angry
+%                         PTcorrect = 1;
+%                     end
+%                 elseif (vars.cue0Prediction(thisTrial) == 2)% cue 1 & cue1->happy
+%                     if vars.Resp == 1 % Happy
+%                         PTcorrect = 1;
+%                     elseif vars.Resp == 0 % Angry
+%                         PTcorrect = 0;
+%                     end
+%                 elseif (vars.cue0Prediction(thisTrial) == 0)
+%                     PTcorrect = NaN;
+%                 end
+%             end
+%             
+%             % Write trial result to file
+%             Results.PTResp(thisTrial) = vars.Resp;
+%             Results.PTAcc(thisTrial) = PTcorrect;
+%             Results.PTRT(thisTrial) = RT;
+%             
+%             Screen('Close', ImTex);                      % Close the image texture
+%             
+%             % Increment predictive trial counter
+%             thisPT = thisPT + 1;
+%             
+%         end%predictionTrial
         
         %% Finish cleaning up after the trial
          % If the trial was missed, repeat it or go on...
