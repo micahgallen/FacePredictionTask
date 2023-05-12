@@ -1,0 +1,11 @@
+function [cbal] = Counterbalance_img(output_dir)
+%UNTITLED Summary of this function goes here
+%   Detailed explanation goes here
+
+% Check if Counterbalance file already exists
+
+output_filename = 'Counterbalance.mat';
+
+
+
+end

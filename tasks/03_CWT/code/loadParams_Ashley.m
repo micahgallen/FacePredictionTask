@@ -15,10 +15,10 @@ vars.language = language;
 vars.emulate        = 0;                % 0 scanning, 1 testing
 vars.ConfRating     = 1;                % Confidence rating? (1 yes, 0 no)
 vars.InputDevice    = 2;                % Response method for conf rating. 1 - keyboard 2 - mouse
-useEyeLink          = 0;                % Use EyeLink to record gaze & pupil?
+useEyeLink          = 1;                % Use EyeLink to record gaze & pupil?
 vars.fixCrossFlag   = 1;
 vars.pluxSynch      = 1;
-vars.pptrigger      = 0;
+vars.pptrigger      = 1;
 vars.runCWTtutorial = 1;
 % vars.language       = 1;
 

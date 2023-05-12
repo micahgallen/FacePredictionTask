@@ -177,7 +177,7 @@ end
 
 %% Finish up
 % Copy data files to 1_VMP2_aux
-copy2VMPaux(participant.subNo);
+copy2NAaux(participant.subNo, participant.visitNo);
 
 % Remove global vars from workspace
 clear global language
