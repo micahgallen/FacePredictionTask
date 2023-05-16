@@ -25,8 +25,8 @@ function localizer_Launcher(scr, subNo, visitNo)
 
 %% Key flags
 vars.emulate     = 0;                % 0 scanning, 1 testing (stims only presented for .5s)
-vars.useEyeLink  = 1;                % 0 no, 1 yes
-vars.pptrigger   = 1;                % 0 no, 1 yes
+vars.useEyeLink  = 0;                % 0 no, 1 yes
+vars.pptrigger   = 0;                % 0 no, 1 yes
 
 
 
@@ -74,6 +74,8 @@ end
 vars.subIDstring = sprintf('%04d', vars.subNo);
 vars.visitNostr  = sprintf('%04d', vars.visitNo);
 
+scr.TextColour = [192 192 192];
+
 % % check for data dir
 % if ~exist('data', 'dir')
 %     mkdir('data')
@@ -108,11 +110,12 @@ end
 %% Stimuli
 vars.TaskPath = fullfile('.');                  % from main task folder (ie. 'Pilot_2_PsiAdaptive')
 vars.StimFolder = fullfile('..', '..', 'stimuli', filesep);   %fullfile('.', 'stimuli', filesep);
-vars.StimSize = 9;                              % DVA
+% vars.StimSize = 9;                              % DVA
+vars.StimSize = 4;                              % 4 = same as stim size in FAD and CWT
 
-vars.CuesInDir = length(dir([vars.StimFolder, 'cue*']));
+vars.CuesInDir = length(dir([vars.StimFolder, 'cue_', cbal_str, '_*'])); % CHANGED TODAY   
 vars.NStims = vars.CuesInDir+2;                % number of cues + happy + angry 
-vars.CuesInDir = length(dir([vars.StimFolder, 'cue*']));
+% vars.CuesInDir = length(dir([vars.StimFolder, 'cue*']));
 
 % Face - find relative to ppt threshold
 % Calculate morphs to use
@@ -175,7 +178,8 @@ disp(['Desired number of volumes: ', num2str(vars.VolsPerExpmt)]);
 
 %% Task
 vars.NStimsTotal    = (vars.NStims*vars.StimReps*vars.BlockReps);
-vars.propTargets    = 0.12;         % proportion of fixation presentations that are targets
+% vars.propTargets    = 0.12;         % proportion of fixation presentations that are targets
+vars.propTargets    = 0.06;         % fewer targets, fewer motor responses
 NTargetTrials       = round((vars.propTargets * vars.NStimsTotal));
 targetTrials        = [ones(1, NTargetTrials) , zeros(1, vars.NStimsTotal-NTargetTrials)];
 vars.targetTrialsArray  = [mixArray(targetTrials); zeros(1, vars.NStimsTotal);...
@@ -196,7 +200,7 @@ Results = struct('blockN',{DummyDouble},'blockType',{DummyDouble},'stimN',{Dummy
 % % Diplay configuration
 % scr.ViewDist = 80;
 % [scr] = displayConfig(scr);
-% HideCursor;
+HideCursor;
 
 % Keyboard & keys configuration
 % [id,name] = GetKeyboardIndices; % to see available devices, & http://cbs.fas.harvard.edu/science/core-facilities/neuroimaging/information-investigators/matlabfaq#device_num
@@ -388,7 +392,8 @@ try
                 if vars.targetTrialsArray(1, totalStimCounter)
                     scr.fixation.color = {scr.TaskColours(Randi(3),:),[0,0,0]};
                 else
-                    scr.fixation.color = {[255,255,255],[0,0,0]};
+%                     scr.fixation.color = {[255,255,255],[0,0,0]};
+                    scr.fixation.color = {[169,169,169],[0,0,0]};
                 end
                 scr = drawFixation(scr);
                 [~, StimOff] = Screen('Flip', scr.win);
@@ -510,7 +515,8 @@ try
                 if vars.targetTrialsArray(1, totalStimCounter)
                     scr.fixation.color = {scr.TaskColours(Randi(3),:),[0,0,0]};
                 else
-                    scr.fixation.color = {[255,255,255],[0,0,0]};
+%                     scr.fixation.color = {[255,255,255],[0,0,0]};
+                    scr.fixation.color = {[169,169,169],[0,0,0]};
                 end
                 scr = drawFixation(scr);
                 [~, StimOff] = Screen('Flip', scr.win);
@@ -577,7 +583,8 @@ try
             for thisStim = 1:vars.StimReps          % loop over the stim reps
                 KbQueueFlush([deviceIndex]);
                 
-                scr.fixation.color = {[255,255,255],[0,0,0]};
+                scr.fixation.color = {[169,169,169],[0,0,0]};
+%                 scr.fixation.color = {[255,255,255],[0,0,0]};
                 scr = drawFixation(scr);
                 [~, StimOn] = Screen('Flip', scr.win);
                 
@@ -603,7 +610,8 @@ try
                 if vars.targetTrialsArray(1, thisStim)
                     scr.fixation.color = {scr.TaskColours(Randi(3),:),[0,0,0]};
                 else
-                    scr.fixation.color = {[255,255,255],[0,0,0]};
+%                     scr.fixation.color = {[255,255,255],[0,0,0]};
+                    scr.fixation.color = {[169,169,169],[0,0,0]};
                 end
                 scr = drawFixation(scr);
                 [~, StimOff] = Screen('Flip', scr.win);

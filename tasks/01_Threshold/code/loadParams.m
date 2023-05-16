@@ -66,7 +66,7 @@ vars.faceGenderSwitch = [zeros(stair.NumTrials, 1); ones(stair.NumTrials, 1)];
 vars.faceGenderSwitch = mixArray(vars.faceGenderSwitch);
 
 %% Task timing
-vars.fixedTiming = 0;       % Flag to force fixed timing for affect response & conf rating. 1 - fixed timing, 2 - self-paced
+vars.fixedTiming = 1;       % Flag to force fixed timing for affect response & conf rating. 1 - fixed timing, 2 - self-paced
 vars.StimT = 1;      % sec
 vars.RespT = 2;      % sec
 vars.ConfT = 3;      % sec

@@ -62,7 +62,7 @@ Results = struct('trialN',{DummyDouble},'EmoResp',{DummyDouble}, 'ConfResp', {Du
     'trialSuccess', {DummyDouble}, 'StimFile', {DummyString}, 'Condition', {DummyDouble},...
     'MorphLevel', {DummyDouble}, 'Indiv', {DummyString}, 'SubID', {DummyDouble}, 'Cue', {DummyDouble}, 'CueProbDesired',...
     {DummyDouble}, 'CueProbEffective', {DummyDouble},'Triggers', {DummyDouble}, 'SOT_trial', {DummyDouble}, 'SOT_cue', {DummyDouble},...
-    'SOT_ISI', {DummyDouble}, 'SOT_face', {DummyDouble}, 'SOT_EmoResp', {DummyDouble}, 'SOT_ISI2', {DummyDouble}, 'SOT_ISI3', {DummyDouble}, 'SOT_ConfOn', {DummyDouble},...
+    'SOT_ISI', {DummyDouble}, 'SOT_face', {DummyDouble}, 'SOT_EmoResp', {DummyDouble}, 'SOT_ConfOn', {DummyDouble},...
     'SOT_ConfOff', {DummyDouble},'SOT_ConfResp', {DummyDouble},...
     'SOT_ITI', {DummyDouble},'SOT_PT', {DummyDouble}, 'SOT_PTResp', {DummyDouble}, 'SOT_PTEnd', {DummyDouble},'TrialDuration', {DummyDouble});
 
@@ -142,8 +142,6 @@ try
     vars.StimSizePix = StimSizePix;
     scr.hz          = Screen('NominalFrameRate', scr.win); 
     scr.pluxDurSec  =  scr.pluxDur / scr.hz;
-
-    scr.TextColour = [192 192 192];
     
     % Dummy calls to prevent delays
     vars.ValidTrial = zeros(1,2);
@@ -184,9 +182,7 @@ try
     
     %% Show task instructions
     Screen('FillRect', scr.win, scr.BackgroundGray, scr.winRect);
-    if vars.pluxSynch
-        Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
-    end
+    Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
     DrawFormattedText(scr.win, [vars.InstructionTask], 'center', 'center', scr.TextColour);
     [~, ~] = Screen('Flip', scr.win);
     new_line;
@@ -258,9 +254,7 @@ try
         
         % Draw texture image to backbuffer
         Screen('FillRect', scr.win, scr.BackgroundGray, scr.winRect);
-        if vars.pluxSynch
-            Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
-        end
+        Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
         Screen('DrawTexture', scr.win, ImTex);
         [~, CueOn] = Screen('Flip', scr.win);
         
@@ -291,9 +285,7 @@ try
             
             % Draw the cue screen
             Screen('FillRect', scr.win, scr.BackgroundGray, scr.winRect);
-            if vars.pluxSynch
-                Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
-            end
+            Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
             Screen('DrawTexture', scr.win, ImTex);
             
             % Draw plux trigger -- CUE
@@ -322,10 +314,8 @@ try
             WaitSecs(0.001);
             
         end
-       
-        if vars.pluxSynch
-            Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
-        end
+        
+        Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
         [~, ~] = Screen('Flip', scr.win);            % clear screen
         
         if vars.pptrigger
@@ -347,9 +337,7 @@ try
         
         %% ISI
         Screen('FillRect', scr.win, scr.BackgroundGray, scr.winRect);
-        if vars.pluxSynch
-            Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
-        end
+        Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
         if vars.fixCrossFlag
             scr = drawFixation(scr);end
         [~, StartITI] = Screen('Flip', scr.win);
@@ -390,9 +378,7 @@ try
         %% Show emotion prompt screen
         % Angry (L arrow) or Happy (R arrow)?
         Screen('FillRect', scr.win, scr.BackgroundGray, scr.winRect);
-        if vars.pluxSynch
-            Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
-        end
+        Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
         DrawFormattedText(scr.win, [vars.InstructionQ], 'center', 'center', scr.TextColour);
         
         [~, vars.StartRT] = Screen('Flip', scr.win);
@@ -460,48 +446,7 @@ try
         Results.EmoRT(thisTrial) = RT;
         Results.EmoAcc(thisTrial) = thisTrialCorrect;
 
-        %% ISI
-        Screen('FillRect', scr.win, scr.BackgroundGray, scr.winRect);
-        if vars.pluxSynch
-            Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
-        end
-        if vars.fixCrossFlag
-            scr = drawFixation(scr);
-        end
-        [~, StartITI2] = Screen('Flip', scr.win);
-        
-        Results.SOT_ISI2(thisTrial) = StartITI2 - Results.SessionStartT;
 
-        if vars.pptrigger
-            sendTrigger(13) % 13 = ISI jitter start trigger
-            disp('Trigger received')
-        end
-
-        if useEyeLink
-            % EyeLink:  ITI
-            startStimText = ['Trial ' num2str(thisTrial) ' 2nd jitter start'];
-            Eyelink('message', startStimText);
-        end
-        
-        if vars.pptrigger
-            sendTrigger(0) % remember to manually pull down triggers
-        end
-
-        % Present the gray screen for ITI duration
-        while (GetSecs - StartITI2) <= vars.ISI(thisTrial)
-            
-            if keys.KeyCode(keys.Escape)==1
-                % Save, mark the run
-                vars.RunSuccessfull = 0;
-                vars.Aborted = 1;
-                experimentEnd(keys, Results, scr, vars);
-                return
-            end
-        end
-        
-        [~, ~, keys.KeyCode] = KbCheck;
-        WaitSecs(0.001);
-        
         %% Present face stimulus
         % Is the outcome H or A?
 %         thisTrialStim = vars.FaceEmot(thisTrial);         % 1 Happy, 0 Angry
@@ -542,9 +487,7 @@ try
         
         % Draw texture image to backbuffer
         Screen('FillRect', scr.win, scr.BackgroundGray, scr.winRect);
-        if vars.pluxSynch
-            Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
-        end
+        Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
         Screen('DrawTexture', scr.win, ImTex);
         [~, StimOn] = Screen('Flip', scr.win);
         
@@ -575,9 +518,7 @@ try
             
             % Draw face stim
             Screen('FillRect', scr.win, scr.BackgroundGray, scr.winRect);
-            if vars.pluxSynch
-                Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
-            end
+            Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
             Screen('DrawTexture', scr.win, ImTex);
             
             % Draw plux trigger -- STIM
@@ -609,9 +550,7 @@ try
             
         end
         
-        if vars.pluxSynch
-            Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
-        end
+        Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
         [~, ~] = Screen('Flip', scr.win);            % clear screen
         
         if vars.pptrigger
@@ -628,48 +567,6 @@ try
         if vars.pptrigger
             sendTrigger(0) % remember to manually pull down triggers
         end
-        
-        %% ISI
-        Screen('FillRect', scr.win, scr.BackgroundGray, scr.winRect);
-        if vars.pluxSynch
-            Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
-        end
-        if vars.fixCrossFlag
-            scr = drawFixation(scr);
-        end
-        [~, StartITI3] = Screen('Flip', scr.win);
-        
-        Results.SOT_ISI3(thisTrial) = StartITI3 - Results.SessionStartT;
-
-        if vars.pptrigger
-            sendTrigger(13) % 13 = ISI jitter start trigger
-            disp('Trigger received')
-        end
-
-        if useEyeLink
-            % EyeLink:  ITI
-            startStimText = ['Trial ' num2str(thisTrial) ' 3rd jitter start'];
-            Eyelink('message', startStimText);
-        end
-        
-        if vars.pptrigger
-            sendTrigger(0) % remember to manually pull down triggers
-        end
-
-        % Present the gray screen for ITI duration
-        while (GetSecs - StartITI3) <= vars.ISI(thisTrial)
-            
-            if keys.KeyCode(keys.Escape)==1
-                % Save, mark the run
-                vars.RunSuccessfull = 0;
-                vars.Aborted = 1;
-                experimentEnd(keys, Results, scr, vars);
-                return
-            end
-        end
-        
-        [~, ~, keys.KeyCode] = KbCheck;
-        WaitSecs(0.001);
         
         %% Confidence rating
         if vars.ConfRating
@@ -728,9 +625,7 @@ try
         
         %% ITI / prepare for next trial
         Screen('FillRect', scr.win, scr.BackgroundGray, scr.winRect);
-        if vars.pluxSynch
-            Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
-        end
+        Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
         if vars.fixCrossFlag
             scr = drawFixation(scr);end
         [~, StartITI] = Screen('Flip', scr.win);
@@ -957,9 +852,7 @@ try
         if (thisTrial == vars.breaks(1)) || (thisTrial == vars.breaks(2))
             % Gray screen - Take a short break
             Screen('FillRect', scr.win, scr.BackgroundGray, scr.winRect);
-            if vars.pluxSynch
-                Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
-            end
+            Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
             DrawFormattedText(scr.win, vars.InstructionPause, 'center', 'center', scr.TextColour);
             [~, breakStartsNow] = Screen('Flip', scr.win);
 
@@ -976,9 +869,7 @@ try
                 breakRemaining = vars.breakT - (GetSecs - breakStartsNow);
                 breakRemainingString = [num2str(round(breakRemaining)), ' seconds'];
                 Screen('FillRect', scr.win, scr.BackgroundGray, scr.winRect);
-                if vars.pluxSynch
-                    Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
-                end
+                Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
                 DrawFormattedText(scr.win, vars.InstructionPause, 'center', 'center', scr.TextColour);
                 DrawFormattedText(scr.win, breakRemainingString, 'center', ((scr.winRect(4)/2)+200), scr.TextColour);
                 [~, ~] = Screen('Flip', scr.win);
@@ -988,9 +879,7 @@ try
             
             % Get ready to continue...
             Screen('FillRect', scr.win, scr.BackgroundGray, scr.winRect);
-            if vars.pluxSynch
-                Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
-            end
+            Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
             DrawFormattedText(scr.win, ['You can now continue. Press BUTTON 3...'], 'center', 'center', scr.TextColour);
             [~, ~] = Screen('Flip', scr.win);
 

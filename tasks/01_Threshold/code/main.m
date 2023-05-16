@@ -83,6 +83,8 @@ try
     scr.bkColor     = scr.BackgroundGray;
     scr.hz          = Screen('NominalFrameRate', scr.win); 
     scr.pluxDurSec  =  scr.pluxDur / scr.hz;
+
+    scr.TextColour = [192 192 192];
     
     % Dummy calls to prevent delays
     vars.ValidTrial = zeros(1,2);
@@ -122,7 +124,9 @@ try
     %% Show task instructions
     Screen('FillRect', scr.win, scr.BackgroundGray, scr.winRect);
     DrawFormattedText(scr.win, [vars.InstructionTask], 'center', 'center', scr.TextColour);
-    Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);           % Ashley added plux
+    if vars.pluxSynch
+        Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);           % Ashley added plux
+    end
     [~, ~] = Screen('Flip', scr.win);
     
     new_line;
@@ -202,7 +206,9 @@ try
         
         % Draw texture image to backbuffer
         Screen('DrawTexture', scr.win, ImTex);
-        Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
+        if vars.pluxSynch
+            Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
+        end
         [~, StimOn] = Screen('Flip', scr.win);
         
         Results.SOT_face(thisTrial) = GetSecs;
@@ -231,7 +237,9 @@ try
         while (GetSecs - StimOn) <= vars.StimT
 
             Screen('FillRect', scr.win, scr.BackgroundGray, scr.winRect);
-            Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
+            if vars.pluxSynch
+                Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
+            end
             Screen('DrawTexture', scr.win, ImTex);
             
             % Draw plux trigger -- STIM
@@ -261,7 +269,9 @@ try
             
         end
         
-        Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
+        if vars.pluxSynch
+            Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
+        end
         [~, ~] = Screen('Flip', scr.win);            % clear screen
 
         if vars.pptrigger
@@ -282,7 +292,9 @@ try
         %% Show emotion prompt screen
         % Angry (L arrow) or Happy (R arrow)?
         Screen('FillRect', scr.win, scr.BackgroundGray, scr.winRect);
-        Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
+        if vars.pluxSynch
+            Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
+        end
         DrawFormattedText(scr.win, [vars.InstructionQ], 'center', 'center', scr.TextColour);
         
         [~, vars.StartRT] = Screen('Flip', scr.win);
@@ -388,7 +400,9 @@ try
         
         %% ITI / prepare for next trial
         Screen('FillRect', scr.win, scr.BackgroundGray, scr.winRect);
-        Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
+        if vars.pluxSynch
+            Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
+        end
         [~, StartITI] = Screen('Flip', scr.win);
         
         Results.SOT_ITI(thisTrial) = GetSecs;

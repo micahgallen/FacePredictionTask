@@ -15,10 +15,10 @@ vars.language = language;
 vars.emulate        = 0;                % 0 scanning, 1 testing
 vars.ConfRating     = 1;                % Confidence rating? (1 yes, 0 no)
 vars.InputDevice    = 2;                % Response method for conf rating. 1 - keyboard 2 - mouse
-useEyeLink          = 1;                % Use EyeLink to record gaze & pupil?
+useEyeLink          = 0;                % Use EyeLink to record gaze & pupil?
 vars.fixCrossFlag   = 1;
-vars.pluxSynch      = 1;
-vars.pptrigger      = 1;
+vars.pluxSynch      = 0;
+vars.pptrigger      = 0;
 vars.runCWTtutorial = 1;
 % vars.language       = 1;
 
@@ -138,16 +138,16 @@ vars.CuesInDir = dir([vars.StimFolder, 'cue*']);      % list contents in 'stimul
 
 
 %% Task timing
-vars.fixedTiming        = 0;    % Flag to force fixed timing for affect response  1 fixed, 0 self-paced (Conf rating always fixed, otherwise infinite!)
-vars.RepeatMissedTrials = 0;
+vars.fixedTiming        = 1;  % 0;    % Flag to force fixed timing for affect response  1 fixed, 0 self-paced (Conf rating always fixed, otherwise infinite!)
+vars.RepeatMissedTrials = 1;
 vars.CueT               = .5;
 vars.StimT              = .5;   % sec
 vars.RespT              = 2;    % sec
-vars.ConfT              = 4;    % 3 % sec
+vars.ConfT              = 3;    % sec
 vars.PTRespT            = 3;    % sec  2
 vars.PTTotT             = 4;    % sec  3
-vars.ISI_min            = 1;    % 2 % long variable ISI, 2-3 or 2-4 sec
-vars.ISI_max            = 2;    % 3
+vars.ISI_min            = .5;    % 2 % long variable ISI, 2-3 or 2-4 sec
+vars.ISI_max            = 1.5;    % 3
 vars.ISI                = randInRange(vars.ISI_min, vars.ISI_max, [vars.NTrialsTotal,1]);
 vars.ITI_min            = 1;    % short variable ITI
 vars.ITI_max            = 2;
@@ -196,7 +196,7 @@ if vars.language == 1       % English
                     
                 case 2 % Mouse
                     vars.InstructionTask = 'Decide if the cue is predicting an angry or happy face on each trial. \n \n ANGRY - BUTTON 1                         HAPPY - BUTTON 4 \n \n \n \n Then, rate how confident you are in your choice using BUTTONS 1 and 4. \n \n Press BUTTON 3 to start...';
-                    vars.InstructionConf = 'How confident are you in your choice? Use the button box to confirm.';
+                    vars.InstructionConf = 'How confident are you in your choice?';
                     vars.ConfEndPoins = {'Guess', 'Certain'};
             end
         case 0

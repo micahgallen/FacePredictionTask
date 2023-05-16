@@ -107,17 +107,21 @@ while ((GetSecs - vars.StartRT) <= vars.RespT)
         feedbackXPos = ((scr.winRect(3)/2));
     end
     
-    Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
+    if vars.pluxSynch
+        Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
+    end
     [~, stimOn] = Screen('Flip', scr.win);
     
     % fixed timing - wait for response interval to pass
     if vars.fixedTiming
         if ~isnan(vars.Resp) && (vars.ValidTrial(1))    % valid trial
-            Screen('FillRect', scr.win, scr.BackgroundGray, scr.winRect);
-            DrawFormattedText(scr.win, [vars.InstructionQ], 'center', 'center', scr.TextColour);
-            DrawFormattedText(scr.win, feedbackString, feedbackXPos, ((scr.winRect(4)/2)+150), scr.AccentColour);
-            [~, ~] = Screen('Flip', scr.win);
-            
+            while ((GetSecs - vars.StartRT) <= vars.RespT)
+                Screen('FillRect', scr.win, scr.BackgroundGray, scr.winRect);
+                DrawFormattedText(scr.win, [vars.InstructionQ], 'center', 'center', scr.TextColour);
+                DrawFormattedText(scr.win, feedbackString, feedbackXPos, ((scr.winRect(4)/2)+150), scr.AccentColour);
+                [~, ~] = Screen('Flip', scr.win);
+            end
+
             outputString = ['Response recorded: ', emotString];
         else
             outputString = 'No response recorded';
@@ -128,7 +132,9 @@ while ((GetSecs - vars.StartRT) <= vars.RespT)
             while (GetSecs - stimOn) <= postResponseInt
                 
                 Screen('FillRect', scr.win, scr.BackgroundGray, scr.winRect);
-                Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
+                if vars.pluxSynch
+                    Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
+                end
                 DrawFormattedText(scr.win, [vars.InstructionQ], 'center', 'center', scr.TextColour);
                 DrawFormattedText(scr.win, feedbackString, feedbackXPos, ((scr.winRect(4)/2)+150), scr.AccentColour);
                 

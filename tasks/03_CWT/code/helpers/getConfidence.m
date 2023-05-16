@@ -27,7 +27,9 @@ switch vars.InputDevice
         % Rate confidence: 1 Unsure, 2 Sure, 3 Very sure
         
         Screen('FillRect', scr.win, scr.BackgroundGray, scr.winRect);
-        Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
+        if vars.pluxSynch
+            Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
+        end
         DrawFormattedText(scr.win, [vars.InstructionConf], 'center', 'center', scr.TextColour);
         [~, StartConf] = Screen('Flip', scr.win);
         vars.ConfOnset = StartConf;
@@ -86,7 +88,9 @@ switch vars.InputDevice
             
             feedbackString = 'O';
             Screen('FillRect', scr.win, scr.BackgroundGray, scr.winRect);
-            Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
+            if vars.pluxSynch
+                Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
+            end
             DrawFormattedText(scr.win, [vars.InstructionConf], 'center', 'center', scr.TextColour);
             DrawFormattedText(scr.win, feedbackString, feedbackXPos, ((scr.winRect(4)/2)+200), scr.AccentColour);
             [~, ~] = Screen('Flip', scr.win);

@@ -12,7 +12,7 @@ function showInstruction(scr, keys, textInput)
 
 Screen('FillRect', scr.win, scr.BackgroundGray, scr.winRect);
 DrawFormattedText(scr.win, textInput, 'center', 'center', scr.TextColour, 60);
-Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
+% Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
 [~, ~] = Screen('Flip', scr.win);
 
 % Wait for space
@@ -23,7 +23,7 @@ end
 
 % Show a blank screen for 200ms for flow
 Screen('FillRect', scr.win, scr.BackgroundGray, scr.winRect);
-Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
+% Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
 [~, ~] = Screen('Flip', scr.win);
 pause(0.2);
 

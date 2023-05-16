@@ -68,7 +68,9 @@ try
     %% 1. Trial Instruction + single trial
     thisTrialStim       = 180;
     Screen('FillRect', scr.win, scr.BackgroundGray, scr.winRect);
-    Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
+    if vars.pluxSynch
+        Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
+    end
     DrawFormattedText(scr.win, instr.B, 'center', 'center', scr.TextColour);
     thisTrialFileName = ['M_', sprintf('%03d', thisTrialStim), '.tif'];
     % Display a face image
@@ -94,7 +96,9 @@ try
     
     % Show a blank screen for 200ms for flow
     Screen('FillRect', scr.win, scr.BackgroundGray, scr.winRect);
-    Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
+    if vars.pluxSynch
+        Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
+    end
     [~, ~] = Screen('Flip', scr.win);
     pause(0.2);
     
@@ -132,14 +136,18 @@ try
         
         % Draw texture image to backbuffer
         Screen('DrawTexture', scr.win, ImTex);
-        Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
+        if vars.pluxSynch
+            Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
+        end
         [~, StimOn] = Screen('Flip', scr.win);
         
         % While loop to show stimulus until StimT seconds elapsed.
         while (GetSecs - StimOn) <= vars.StimT
             
             Screen('FillRect', scr.win, scr.BackgroundGray, scr.winRect);
-            Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
+            if vars.pluxSynch
+                Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
+            end
             Screen('DrawTexture', scr.win, ImTex);
             
             % Draw plux trigger -- STIM
@@ -166,14 +174,18 @@ try
             WaitSecs(0.001);
         end
         
-        Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
+        if vars.pluxSynch
+            Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
+        end
         [~, ~] = Screen('Flip', scr.win);            % clear screen
         
         
         % Show emotion prompt screen
         % Angry (L arrow) or Happy (R arrow)?
         Screen('FillRect', scr.win, scr.BackgroundGray, scr.winRect);
-        Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);       % Ashley white rect for display of choice
+        if vars.pluxSynch
+            Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);       % Ashley white rect for display of choice
+        end
         DrawFormattedText(scr.win, [vars.InstructionQ], 'center', 'center', scr.TextColour);
         [~, vars.StartRT] = Screen('Flip', scr.win);
         
@@ -182,7 +194,9 @@ try
         
         % ITI / prepare for next trial
         Screen('FillRect', scr.win, scr.BackgroundGray, scr.winRect);
-        Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
+        if vars.pluxSynch
+            Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
+        end
         [~, StartITI] = Screen('Flip', scr.win);
         
         % Present the gray screen for ITI duration

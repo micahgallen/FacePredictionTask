@@ -277,21 +277,21 @@ while answer == 0
         if keyCode(responseKeys.Two) == 1
             x = x - stepSize; % Goes stepSize pixel to the left
             
-            if pptrigger
-                sendTrigger(130) % 130 = confidence slider LEFT trigger
-                disp('Trigger received')
-        
-                sendTrigger(0) % remember to manually pull down triggers
-            end
+%             if pptrigger
+%                 sendTrigger(130) % 130 = confidence slider LEFT trigger
+%                 disp('Trigger received')
+%         
+%                 sendTrigger(0) % remember to manually pull down triggers
+%             end
         elseif keyCode(responseKeys.Three) == 1
             x = x + stepSize; % Goes stepSize pixel to the right
             
-            if pptrigger
-                sendTrigger(135) % 135 = confidence slider RIGHT trigger
-                disp('Trigger received')
-        
-                sendTrigger(0) % remember to manually pull down triggers
-            end
+%             if pptrigger
+%                 sendTrigger(135) % 135 = confidence slider RIGHT trigger
+%                 disp('Trigger received')
+%         
+%                 sendTrigger(0) % remember to manually pull down triggers
+%             end
         end
     else
         error('Unknown device');
@@ -349,35 +349,36 @@ while answer == 0
     end
     
     % Flip screen
-    Screen('FillRect', screenPointer, colour_rect, trigger_rect);
+%     Screen('FillRect', screenPointer, colour_rect, trigger_rect);
     Screen('Flip', screenPointer);
     
     
     % Check if answer has been given
-    if strcmp(device, 'mouse')
-        secs = GetSecs;
-        if buttons(mouseButton) == 1
-            answer = 1;
-        end
-    elseif strcmp(device, 'keyboard')
-        [~, secs, keyCode] = KbCheck;
-        while (~any(keyCode)) && (answer == 0) % wait for press & response time
-            [~,~,keyCode] = KbCheck; % L [1 0 0], R [0 0 1]
-        end
-        if keyCode(responseKeys.One) == 1
-            answer = 1;
-
-            if pptrigger
-                sendTrigger(140) % 140 = confidence confirmation trigger
-                disp('Trigger received')
-        
-                sendTrigger(0) % remember to manually pull down triggers
-            end
-
-        end
-    end
+%     if strcmp(device, 'mouse')
+%         secs = GetSecs;
+%         if buttons(mouseButton) == 1
+%             answer = 1;
+%         end
+%     elseif strcmp(device, 'keyboard')
+%         [~, secs, keyCode] = KbCheck;
+%         while (~any(keyCode)) && (answer == 0) % wait for press & response time
+%             [~,~,keyCode] = KbCheck; % L [1 0 0], R [0 0 1]
+%         end
+%         if keyCode(responseKeys.One) == 1
+%             answer = 1;
+% 
+%             if pptrigger
+%                 sendTrigger(140) % 140 = confidence confirmation trigger
+%                 disp('Trigger received')
+%         
+%                 sendTrigger(0) % remember to manually pull down triggers
+%             end
+% 
+%         end
+%     end
     
     % Abort if answer takes too long
+    secs = GetSecs;
     if secs - t0 > aborttime 
         if pptrigger
             sendTrigger(145) % 145 = confidence timeout trigger

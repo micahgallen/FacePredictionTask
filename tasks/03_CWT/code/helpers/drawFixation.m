@@ -37,7 +37,8 @@ end
 
 %Color
 if ~isfield(display.fixation,'color')
-    display.fixation.color = {[255,255,255],[0,0,0]};
+%     display.fixation.color = {[255,255,255],[0,0,0]};
+    display.fixation.color = {[169,169,169],[0,0,0]}; % fixation is light grey and black rather than white and black
 end
 
 %Flip

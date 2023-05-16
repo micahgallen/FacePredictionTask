@@ -176,7 +176,7 @@ end
 
 
 %% Finish up
-% Copy data files to 1_VMP2_aux
+% Copy data files to NA_aux
 copy2NAaux(participant.subNo, participant.visitNo);
 
 % Remove global vars from workspace
