@@ -215,6 +215,7 @@ try
         WaitSecs(0.001);
         
         Screen('Close', ImTex);
+        vars.Resp = NaN;
         
         
     end

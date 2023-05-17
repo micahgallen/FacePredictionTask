@@ -200,11 +200,10 @@ Results = struct('blockN',{DummyDouble},'blockType',{DummyDouble},'stimN',{Dummy
 % % Diplay configuration
 % scr.ViewDist = 80;
 % [scr] = displayConfig(scr);
-HideCursor;
 
 % Keyboard & keys configuration
 % [id,name] = GetKeyboardIndices; % to see available devices, & http://cbs.fas.harvard.edu/science/core-facilities/neuroimaging/information-investigators/matlabfaq#device_num
-KbReleaseWait;                      % Wait for all keyboard buttons released
+% KbReleaseWait;                      % Wait for all keyboard buttons released
 % Get first mouse device:
 d = GetMouseIndices;
 deviceIndex = d(1);
@@ -216,6 +215,8 @@ deviceIndex = d(1);
 [keys] = keyConfigQueue();
 KbQueueCreate(deviceIndex, keys.keysOfInterest);
 KbQueueStart(deviceIndex);
+
+HideCursor;
 
 try
     %% Open screen window, if one is not already open

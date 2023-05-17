@@ -1030,6 +1030,7 @@ try
     
     %% EyeLink: experiment end
     if useEyeLink
+        addpath("C:\Users\stimuser.stimpc-08\Desktop\Ashley\CWT_behavioural\tasks\03_CWT\code\helpers");
         ELshutdown(vars)
     end
     

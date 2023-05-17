@@ -111,7 +111,7 @@ while ((GetSecs - vars.StartRT) <= vars.RespT)
     if vars.pluxSynch
         Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
     end
-    [~, stimOn] = Screen('Flip', scr.win);
+%     [~, stimOn] = Screen('Flip', scr.win);
     if vars.fixedTiming
         if ~isnan(vars.Resp) && (vars.ValidTrial(1))    % valid trial
             while ((GetSecs - vars.StartRT) <= vars.RespT)

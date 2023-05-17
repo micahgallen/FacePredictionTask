@@ -110,7 +110,7 @@ while ((GetSecs - vars.StartRT) <= vars.RespT)
     if vars.pluxSynch
         Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
     end
-    [~, stimOn] = Screen('Flip', scr.win);
+%     [~, stimOn] = Screen('Flip', scr.win);
     
     % fixed timing - wait for response interval to pass
     if vars.fixedTiming
