@@ -215,6 +215,7 @@ deviceIndex = d(1);
 [keys] = keyConfigQueue();
 KbQueueCreate(deviceIndex, keys.keysOfInterest);
 KbQueueStart(deviceIndex);
+HideCursor;
 
 HideCursor;
 

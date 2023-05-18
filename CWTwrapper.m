@@ -115,6 +115,14 @@ scr.resolution  = scr.winRect(3:4);                    % number of pixels of dis
 global tutorialAbort
 tutorialAbort = 0;
 
+cd(fullfile('.', 'tasks', '00_Resting'))
+restingstate_Launcher(scr);
+if tutorialAbort == 1
+    disp('-------------- Experiment aborted. ----------------')
+    sca
+    return
+end
+cd(fullfile('..', '..'))
 
 %% 01 Run thresholding task
 if ((nargin < 1) || (whichPart==1)) && (participant.partsCompleted(1) == 0)
