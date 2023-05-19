@@ -25,7 +25,7 @@ function localizer_Launcher(scr, subNo, visitNo)
 
 %% Key flags
 vars.emulate     = 0;                % 0 scanning, 1 testing (stims only presented for .5s)
-vars.useEyeLink  = 0;                % 0 no, 1 yes
+vars.useEyeLink  = 1;                % 0 no, 1 yes
 vars.pptrigger   = 0;                % 0 no, 1 yes
 
 

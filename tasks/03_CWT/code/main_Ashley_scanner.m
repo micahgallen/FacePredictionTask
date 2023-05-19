@@ -117,6 +117,8 @@ end
 try
     %% Open screen window
     if ~isfield(scr, 'win')
+        Datapixx('Open');  % get Propixx ready for sending triggers etc
+
         AssertOpenGL;
         [scr.win, scr.winRect] = PsychImaging('OpenWindow', scr.screenID, scr.BackgroundGray); %,[0 0 1920 1080] mr screen dim
         % Set text size, dependent on screen resolution
@@ -223,7 +225,7 @@ try
     angryCounter = 1;
     thisPT = 1;                 % prediction trials counter
     endOfExpt = 0;
-    
+    Datapixx('Open');  % get Propixx ready for sending triggers etc
     while endOfExpt ~= 1       % General stop flag for the loop
         
         Results.SOT_trial(thisTrial) = GetSecs - Results.SessionStartT;
@@ -262,7 +264,13 @@ try
             Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
         end
         Screen('DrawTexture', scr.win, ImTex);
+        
+        Datapixx('SetDoutValues', 4); % get propix ready, trigger code 4
+        Datapixx('RegWrVideoSync'); % send propix trigger on next flip
         [~, CueOn] = Screen('Flip', scr.win);
+        
+        Datapixx('SetDoutValues', 0); % get propix ready, trigger code 4
+        Datapixx('RegWrVideoSync'); % send propix trigger on next flip
         
         Results.SOT_cue(thisTrial) = CueOn - Results.SessionStartT;
         
@@ -394,8 +402,12 @@ try
             Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
         end
         DrawFormattedText(scr.win, [vars.InstructionQ], 'center', 'center', scr.TextColour);
-        
+        Datapixx('SetDoutValues', 5); % get propix ready, trigger code 5
+        Datapixx('RegWrVideoSync'); % send propix trigger on next flip
         [~, vars.StartRT] = Screen('Flip', scr.win);
+        
+        Datapixx('SetDoutValues', 0); % get propix ready, trigger code 5
+        Datapixx('RegWrVideoSync'); % send propix trigger on next flip
         
         if vars.pptrigger
             sendTrigger(70) % 70 = emotion prompt trigger
@@ -546,7 +558,14 @@ try
             Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
         end
         Screen('DrawTexture', scr.win, ImTex);
+        
+        Datapixx('SetDoutValues', 6); % get propix ready, trigger code 6
+        Datapixx('RegWrVideoSync'); % send propix trigger on next flip
+        
         [~, StimOn] = Screen('Flip', scr.win);
+        
+        Datapixx('SetDoutValues', 0); % get propix ready, trigger code 4
+        Datapixx('RegWrVideoSync'); % send propix trigger on next flip
         
         Results.SOT_face(thisTrial) = StimOn - Results.SessionStartT;
         
@@ -733,7 +752,13 @@ try
         end
         if vars.fixCrossFlag
             scr = drawFixation(scr);end
+        
+        
+        Datapixx('SetDoutValues', 7); % get propix ready, trigger code 7
+        Datapixx('RegWrVideoSync'); % send propix trigger on next flip
         [~, StartITI] = Screen('Flip', scr.win);
+         Datapixx('SetDoutValues', 0); % get propix ready, trigger code 7
+        Datapixx('RegWrVideoSync'); % send propix trigger on next flip
         
         Results.SOT_ITI(thisTrial) = GetSecs - Results.SessionStartT;
 
@@ -1034,6 +1059,8 @@ try
         ELshutdown(vars)
     end
     
+    Datapixx('close'); % close propixx connection
+
     % Cleanup at end of experiment - Close window, show mouse cursor, close
     % result file, switch back to priority 0
     %     sca;

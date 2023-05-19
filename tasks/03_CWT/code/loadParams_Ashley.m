@@ -18,8 +18,8 @@ vars.InputDevice    = 2;                % Response method for conf rating. 1 - k
 useEyeLink          = 1;                % Use EyeLink to record gaze & pupil?
 vars.fixCrossFlag   = 1;
 vars.pluxSynch      = 0;
-vars.pptrigger      = 1;
-vars.runCWTtutorial = 1;
+vars.pptrigger      = 0;
+vars.runCWTtutorial = 0;
 % vars.language       = 1;
 
 % Get current timestamp & set filename
@@ -139,7 +139,7 @@ vars.CuesInDir = dir([vars.StimFolder, 'cue*']);      % list contents in 'stimul
 
 %% Task timing
 vars.fixedTiming        = 1;  % 0;    % Flag to force fixed timing for affect response  1 fixed, 0 self-paced (Conf rating always fixed, otherwise infinite!)
-vars.RepeatMissedTrials = 1;
+vars.RepeatMissedTrials = 0;
 vars.CueT               = .5;
 vars.StimT              = .5;   % sec
 vars.RespT              = 2;    % sec

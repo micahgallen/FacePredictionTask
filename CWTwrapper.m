@@ -116,7 +116,7 @@ global tutorialAbort
 tutorialAbort = 0;
 
 cd(fullfile('.', 'tasks', '00_Resting'))
-restingstate_Launcher(scr);
+restingstate_Launcher(scr, participant.subNo, participant.visitNo);
 if tutorialAbort == 1
     disp('-------------- Experiment aborted. ----------------')
     sca

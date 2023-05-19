@@ -1,11 +1,19 @@
-function restingstate_Launcher(scr)
+function restingstate_Launcher(scr, subNo, visitNo)
 
 global tutorialAbort
 tutorialAbort = 0;
 
+vars.useEyeLink  = 1; 
+
 %% Setup
-if nargin < 1
+if nargin == 1
+    vars.subNo = input('What is the subject number (e.g. 0001)?   ');
+    vars.visitNo = input('What is the visit number (e.g. 0001)?   ');
+    
+elseif nargin < 1
     addpath(genpath('helpers'));
+    vars.subNo = input('What is the subject number (e.g. 0001)?   ');
+    vars.visitNo = input('What is the visit number (e.g. 0001)?   ');
     
     %% Set screen parameters and open a window
     scr.ViewDist = 56;
@@ -32,7 +40,12 @@ if nargin < 1
     scr.resolution = scr.winRect(3:4);                    % number of pixels of display in horizontal direction
 else
     addpath(genpath('helpers'));
+    vars.subNo = subNo;
+    vars.visitNo = visitNo;
 end
+
+vars.subIDstring = sprintf('%04d', vars.subNo);
+vars.visitNostr  = sprintf('%04d', vars.visitNo);
 
 scr.TextColour = [192 192 192];
 restingscan_time = 300;
@@ -72,6 +85,17 @@ try
     end
     
 
+    if vars.useEyeLink
+        vars.exptName = 'RestCWT';
+        
+        % check for eyelink data dir
+        if ~exist('./data/eyelink', 'dir')
+            mkdir('./data/eyelink')
+        end
+        
+        [vars] = ELsetup(scr, vars);
+    end
+    
     % Determine stim size in pixels
     scr.bkColor = scr.BackgroundGray;
     HideCursor;
@@ -94,6 +118,10 @@ try
     while keys.KeyCode(keys.Space) == 0
         [~, ~, keys.KeyCode] = KbCheck;
         WaitSecs(0.001);
+    end
+    
+    if vars.useEyeLink
+        Eyelink('message','STARTEXP');
     end
 
     %% Show fixation screen - 5 min
@@ -124,10 +152,22 @@ try
     DrawFormattedText(scr.win, feedbackText, 'center', 'center', scr.TextColour);
     [~, ~] = Screen('Flip', scr.win);
     WaitSecs(3);
-
+    
+     %% EyeLink: experiment end
+    if vars.useEyeLink
+        ELshutdown(vars)
+    end
+    
+    %% Clean up
+    
     rmpath(genpath('helpers'));
-
-    catch ME
+    
+catch ME
+    
+    %% EyeLink: experiment end
+%     if vars.useEyeLink
+%         ELshutdown(vars)
+%     end
     
     rmpath(genpath('helpers'));
     rethrow(ME)

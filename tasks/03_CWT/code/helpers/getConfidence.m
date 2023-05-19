@@ -31,7 +31,13 @@ switch vars.InputDevice
             Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
         end
         DrawFormattedText(scr.win, [vars.InstructionConf], 'center', 'center', scr.TextColour);
+        
+        Datapixx('SetDoutValues', 8); % get propix ready, trigger code 8
+        Datapixx('RegWrVideoSync'); % send propix trigger on next flip
         [~, StartConf] = Screen('Flip', scr.win);
+        Datapixx('SetDoutValues', 0); % get propix ready, trigger code 8
+        Datapixx('RegWrVideoSync'); % send propix trigger on next flip
+        
         vars.ConfOnset = StartConf;
         
         % loop until valid key is pressed or ConfT is reached

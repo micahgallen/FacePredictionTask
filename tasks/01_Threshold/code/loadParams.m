@@ -16,11 +16,11 @@ vars.language = language;
 %% Key flags
 vars.ConfRating     = 0;                % Confidence rating? (1 yes, 0 no)
 vars.InputDevice    = 1;                % Response method for conf rating. 1 - keyboard 2 - mouse
-useEyeLink          = 0;
-vars.RepeatMissedTrials = 1;            % Do we want to repeat any missed trials? 1 yes, 0 no
+useEyeLink          = 1;
+vars.RepeatMissedTrials = 0;            % Do we want to repeat any missed trials? 1 yes, 0 no
 plotStaircase       = 0;
 vars.pluxSynch      = 0;
-vars.runFADtutorial = 1;
+vars.runFADtutorial = 0;
 vars.pptrigger      = 0;
 % vars.language       = 1;               	 % 1 English, 2 Danish
 
