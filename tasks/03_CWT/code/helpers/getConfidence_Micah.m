@@ -16,8 +16,7 @@ function [vars] = getConfidence(keys, scr, vars)
 %
 % Niia Nikolova
 % Edited by Ashley Tyrer
-% Edited by Micah Allen
-% Last edit: 22/05/2023
+% Last edit: 02/05/2023
 
 
 %% setup variables
@@ -54,7 +53,7 @@ while (GetSecs - StartConf) <= vars.ConfT
 
     while (~validkeypress) && ((GetSecs - StartConf) <= vars.ConfT) % wait for press & response time
 
-        [~,EndConf,keys.KeyCode] = KbCheck;
+        [~,EndConf,keys.KeyCode] = KbCheck; 
 
         if keys.KeyCode(keys.One)==1 || keys.KeyCode(keys.Two)==1 || keys.KeyCode(keys.Three)==1 || keys.KeyCode(keys.Four)==1
 
@@ -62,7 +61,7 @@ while (GetSecs - StartConf) <= vars.ConfT
             validkeypress = 1;
             WaitSecs(0.001);
 
-
+        
         else
             WaitSecs(0.001);
             validkeypress = 0;
@@ -73,7 +72,7 @@ while (GetSecs - StartConf) <= vars.ConfT
 
     % clear the response trigger
     send_propix_trigger(vars.propixtrigger, vars.triggers.CloseTrigger)
-
+    
 
     %% Read Keycodes for logging
     if keys.KeyCode(keys.One)==1
@@ -96,10 +95,8 @@ while (GetSecs - StartConf) <= vars.ConfT
         vars.abortFlag = 1;
 
     else
-
-        vars.ConfResp = NaN;
-        vars.ValidTrial(2) = 0;
-
+        % DrawText: Please press a valid key...
+   
     end
 
 

@@ -34,7 +34,7 @@ function main_Ashley_scanner(vars, scr, cbal)
 loadParams_Ashley;
 disp(strcat('Main, cbal = ', num2str(cbal)))
 
-vars.cat_slide = 0;
+vars.cat_slide = 1;
 
 % Fill in Results structure
 Results.outputMat           = vars.cueProbabilityOutput;
@@ -117,7 +117,7 @@ end
 try
     %% Open screen window
     if ~isfield(scr, 'win')
-        Datapixx('Open');  % get Propixx ready for sending triggers etc
+        
 
         AssertOpenGL;
         [scr.win, scr.winRect] = PsychImaging('OpenWindow', scr.screenID, scr.BackgroundGray); %,[0 0 1920 1080] mr screen dim
@@ -218,6 +218,17 @@ try
         sendTrigger(0) % remember to manually pull down triggers
     end
 
+
+    %% intitialize propix triggers
+    
+    isConnected = Datapixx('isReady');
+    if ~isConnected
+        Datapixx('Open');
+    end
+
+    send_propix_trigger(vars.propixtrigger, vars.triggers.TaskStart)
+    [~, ~] = Screen('Flip', scr.win);
+
     %% Run through trials
     WaitSecs(0.500);            % pause before experiment start
     thisTrial = 1;              % trial counter
@@ -225,7 +236,11 @@ try
     angryCounter = 1;
     thisPT = 1;                 % prediction trials counter
     endOfExpt = 0;
-    Datapixx('Open');  % get Propixx ready for sending triggers etc
+    
+    send_propix_trigger(vars.propixtrigger, vars.triggers.CloseTrigger)
+    
+    [~, ~] = Screen('Flip', scr.win);
+
     while endOfExpt ~= 1       % General stop flag for the loop
         
         Results.SOT_trial(thisTrial) = GetSecs - Results.SessionStartT;
@@ -263,15 +278,15 @@ try
         if vars.pluxSynch
             Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
         end
+        
+        
         Screen('DrawTexture', scr.win, ImTex);
         
-        Datapixx('SetDoutValues', 4); % get propix ready, trigger code 4
-        Datapixx('RegWrVideoSync'); % send propix trigger on next flip
+        send_propix_trigger(vars.propixtrigger, vars.triggers.cueOnset)    
+
         [~, CueOn] = Screen('Flip', scr.win);
         
-        Datapixx('SetDoutValues', 0); % get propix ready, trigger code 4
-        Datapixx('RegWrVideoSync'); % send propix trigger on next flip
-        
+   
         Results.SOT_cue(thisTrial) = CueOn - Results.SessionStartT;
         
         if vars.pptrigger
@@ -334,6 +349,8 @@ try
         if vars.pluxSynch
             Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
         end
+
+        send_propix_trigger(vars.propixtrigger, vars.triggers.CloseTrigger)
         [~, ~] = Screen('Flip', scr.win);            % clear screen
         
         if vars.pptrigger
@@ -360,6 +377,9 @@ try
         end
         if vars.fixCrossFlag
             scr = drawFixation(scr);end
+
+        send_propix_trigger(vars.propixtrigger, vars.triggers.fixOnset)
+        
         [~, StartITI] = Screen('Flip', scr.win);
         
         Results.SOT_ISI(thisTrial) = StartITI - Results.SessionStartT;
@@ -392,6 +412,8 @@ try
         end
         
         [~, ~, keys.KeyCode] = KbCheck;
+        send_propix_trigger(vars.propixtrigger, vars.triggers.CloseTrigger)
+        [~, ~] = Screen('Flip', scr.win);
         WaitSecs(0.001);
         
         
@@ -402,13 +424,13 @@ try
             Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
         end
         DrawFormattedText(scr.win, [vars.InstructionQ], 'center', 'center', scr.TextColour);
-        Datapixx('SetDoutValues', 5); % get propix ready, trigger code 5
-        Datapixx('RegWrVideoSync'); % send propix trigger on next flip
+        
+        send_propix_trigger(vars.propixtrigger, vars.triggers.respIntOnset)
+
         [~, vars.StartRT] = Screen('Flip', scr.win);
         
-        Datapixx('SetDoutValues', 0); % get propix ready, trigger code 5
-        Datapixx('RegWrVideoSync'); % send propix trigger on next flip
-        
+        send_propix_trigger(vars.propixtrigger, vars.triggers.CloseTrigger)
+
         if vars.pptrigger
             sendTrigger(70) % 70 = emotion prompt trigger
             disp('Trigger received')
@@ -466,11 +488,19 @@ try
                 thisTrialCorrect = NaN;
             end
         end
+
+        
         
         % Write trial result to file
         Results.EmoResp(thisTrial) = vars.Resp;
         Results.EmoRT(thisTrial) = RT;
         Results.EmoAcc(thisTrial) = thisTrialCorrect;
+        Results.RTFliptimes(thisTrial) = vars.RTFlipTime;
+        
+        % nag the participant if too slow
+        if vars.ValidTrial(1) == 0
+            displayTooSlowMessage(scr)
+        end
 
         %% ISI
         Screen('FillRect', scr.win, scr.BackgroundGray, scr.winRect);
@@ -480,8 +510,10 @@ try
         if vars.fixCrossFlag
             scr = drawFixation(scr);
         end
+
+        send_propix_trigger(vars.propixtrigger, vars.triggers.fixOnset)
         [~, StartITI2] = Screen('Flip', scr.win);
-        
+        send_propix_trigger(vars.propixtrigger, vars.triggers.CloseTrigger)
         Results.SOT_ISI2(thisTrial) = StartITI2 - Results.SessionStartT;
 
         if vars.pptrigger
@@ -558,14 +590,10 @@ try
             Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
         end
         Screen('DrawTexture', scr.win, ImTex);
-        
-        Datapixx('SetDoutValues', 6); % get propix ready, trigger code 6
-        Datapixx('RegWrVideoSync'); % send propix trigger on next flip
-        
+      
+        send_propix_trigger(vars.propixtrigger, vars.triggers.stimOnset)
         [~, StimOn] = Screen('Flip', scr.win);
         
-        Datapixx('SetDoutValues', 0); % get propix ready, trigger code 4
-        Datapixx('RegWrVideoSync'); % send propix trigger on next flip
         
         Results.SOT_face(thisTrial) = StimOn - Results.SessionStartT;
         
@@ -631,6 +659,7 @@ try
         if vars.pluxSynch
             Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
         end
+        send_propix_trigger(vars.propixtrigger, vars.triggers.CloseTrigger)
         [~, ~] = Screen('Flip', scr.win);            % clear screen
         
         if vars.pptrigger
@@ -656,6 +685,8 @@ try
         if vars.fixCrossFlag
             scr = drawFixation(scr);
         end
+
+        send_propix_trigger(vars.propixtrigger, vars.triggers.fixOnset)
         [~, StartITI3] = Screen('Flip', scr.win);
         
         Results.SOT_ISI3(thisTrial) = StartITI3 - Results.SessionStartT;
@@ -686,6 +717,7 @@ try
                 return
             end
         end
+        send_propix_trigger(vars.propixtrigger, vars.triggers.CloseTrigger)
         
         [~, ~, keys.KeyCode] = KbCheck;
         WaitSecs(0.001);
@@ -700,6 +732,7 @@ try
             end
             
             % Fetch the participant's confidence rating
+           
             [vars] = getConfidence(keys, scr, vars);
             Results.SOT_ConfResp(thisTrial) = vars.ConfRatingT - Results.SessionStartT;
             Results.SOT_ConfOn(thisTrial) = vars.ConfOnset - Results.SessionStartT;
@@ -714,8 +747,10 @@ try
                 return
             end
             
-            % If this trial was successfull, move on...
-            if(vars.ValidTrial(2)), WaitSecs(0.2); end
+            % If no confidence response was made, nag the participant
+            if vars.ValidTrial(2) == 0
+                displayTooSlowMessage(scr)
+            end
             
             % Write trial result to file
             Results.ConfResp(thisTrial) = vars.ConfResp;
@@ -747,18 +782,13 @@ try
         
         %% ITI / prepare for next trial
         Screen('FillRect', scr.win, scr.BackgroundGray, scr.winRect);
-        if vars.pluxSynch
-            Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
-        end
+
         if vars.fixCrossFlag
             scr = drawFixation(scr);end
+        send_propix_trigger(vars.propixtrigger, vars.triggers.trialEnd)
         
+        [~, ~] = Screen('Flip', scr.win);
         
-        Datapixx('SetDoutValues', 7); % get propix ready, trigger code 7
-        Datapixx('RegWrVideoSync'); % send propix trigger on next flip
-        [~, StartITI] = Screen('Flip', scr.win);
-         Datapixx('SetDoutValues', 0); % get propix ready, trigger code 7
-        Datapixx('RegWrVideoSync'); % send propix trigger on next flip
         
         Results.SOT_ITI(thisTrial) = GetSecs - Results.SessionStartT;
 
@@ -777,9 +807,12 @@ try
             sendTrigger(0) % remember to manually pull down triggers
         end
 
-        % Present the gray screen for ITI duration
+        % Present the fixation for ITI duration
         while (GetSecs - StartITI) <= vars.ITI(thisTrial)
             
+        [~, ~, keys.KeyCode] = KbCheck;
+        WaitSecs(0.001);
+
             if keys.KeyCode(keys.Escape)==1
                 % Save, mark the run
                 vars.RunSuccessfull = 0;
@@ -787,10 +820,10 @@ try
                 experimentEnd(keys, Results, scr, vars);
                 return
             end
+
+        
         end
         
-        [~, ~, keys.KeyCode] = KbCheck;
-        WaitSecs(0.001);
         
         % Clean up
         Screen('Close', ImTex);
@@ -812,148 +845,8 @@ try
             sendTrigger(0) % remember to manually pull down triggers
         end
 
-%         %% Is this trial followed by a prediction trial?
-%         if vars.predictionTrialNext(thisTrial)
-%             % First present the prompt, then the cue
-%             Screen('FillRect', scr.win, scr.BackgroundGray, scr.winRect);
-%             Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
-%             DrawFormattedText(scr.win, [vars.PTTitle], 'center', ((scr.winRect(4)/2)-6*(scr.winRect(4)/8)), scr.TextColour);
-%             DrawFormattedText(scr.win, vars.PTQuestion, 'center', ((scr.winRect(4)/2)-(scr.winRect(4)/4)), scr.TextColour);
-%             [~, ~] = Screen('Flip', scr.win);
-%             WaitSecs(0.2);
-%             
-%             % Present cue + prediciton trial text
-%             thisCue = vars.PTwhichCue(thisPT);
-%             thisTrialCue = ['cue_', num2str(cbal), '_', num2str(thisCue), '.tif'];
-%             new_line;
-%             disp(['Prediction trial # ', num2str(thisPT), '. Cue: ', thisTrialCue]);
-%             if vars.cue0Prediction(thisTrial) == 0 % non-predictive
-%                 worldTypeString = 'non-predictive';
-%             elseif vars.cue0Prediction(thisTrial) == 1 % cue_0 -> Happy
-%                 worldTypeString = 'cue_0 -> Happy';
-%             elseif vars.cue0Prediction(thisTrial) == 2 % cue_0 -> Angry
-%                 worldTypeString = 'cue_0 -> Angry';
-%             end
-%             disp(['The current block is: ', worldTypeString]);
-%             
-%             % Read stim image for this trial into matrix 'imdata'
-%             CueFilePath = strcat(vars.StimFolder, thisTrialCue);
-%             ImDataOrig = imread(char(CueFilePath));
-%             ImData = imresize(ImDataOrig, [StimSizePix NaN]);           % Adjust image size to StimSize dva in Y dir
-%             
-%             % Make texture image out of image matrix 'imdata'
-%             ImTex = Screen('MakeTexture', scr.win, ImData);
-%             
-%             % Draw texture image to backbuffer
-%             Screen('FillRect', scr.win, scr.BackgroundGray, scr.winRect);
-%             Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
-%             Screen('DrawTexture', scr.win, ImTex);
-%             DrawFormattedText(scr.win, [vars.PTTitle], 'center', ((scr.winRect(4)/2)-6*(scr.winRect(4)/8)), scr.TextColour);
-%             DrawFormattedText(scr.win, [vars.PTQuestion], 'center', ((scr.winRect(4)/2)-(scr.winRect(4)/4)), scr.TextColour);
-% 
-%             [~, vars.PTOn] = Screen('Flip', scr.win);
-%             
-%             Results.SOT_PT(thisTrial) = vars.PTOn - Results.SessionStartT;
-%             
-%             if vars.pptrigger
-%                 sendTrigger(150) % 150 = prediction trial trigger
-%                 disp('Trigger received')
-%             end
-%             
-%             if useEyeLink
-%                 % EyeLink:  cue on
-%                 startStimText = ['Trial ' num2str(thisTrial) ' PT on'];
-%                 Eyelink('message', startStimText);
-%             end
-%             
-%             if vars.pptrigger
-%                 sendTrigger(0) % remember to manually pull down triggers
-%             end
-% 
-%             % Fetch the participant's response, via keyboard or mouse
-%             [vars] = getResponsePT(keys, scr, vars);
-%             Results.SOT_PTResp(thisTrial) = vars.PTEndResp - Results.SessionStartT;
-%            
-%             
-%             %% Show a fixation for the remainder of the 3sec
-%             StartITI_PT = GetSecs;
-%             while (GetSecs - vars.PTOn) <= (vars.PTTotT) %3sec total
-%                 
-%                 Screen('FillRect', scr.win, scr.BackgroundGray, scr.winRect);
-%                 Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
-%                 if vars.fixCrossFlag
-%                     scr = drawFixation(scr);end
-%                 [~, StartITI_PT] = Screen('Flip', scr.win);
-%                 
-%                 if vars.pptrigger
-%                     sendTrigger(90) % 90 = prediction trial off trigger
-%                     disp('Trigger received')
-%                 end
-%                 
-%                 if useEyeLink
-%                     % EyeLink:  cue off
-%                     startStimText = ['Trial ' num2str(thisTrial) ' PT off'];
-%                     Eyelink('message', startStimText);
-%                 end
-% 
-%                 if vars.pptrigger
-%                     sendTrigger(0) % remember to manually pull down triggers
-%                 end
-% 
-%             end
-%             Results.SOT_PTEnd(thisTrial) = StartITI_PT - Results.SessionStartT; 
-%             
-%             % Compute response time
-%             RT = (vars.PTEndResp - vars.PTOn);
-%             
-%             % Recode the accuracy:
-%             if (vars.PTwhichCue(thisPT)==0)
-%                 if (vars.cue0Prediction(thisTrial) == 1)% cue 0, & cue0->happy
-%                     if vars.Resp == 1 % Happy
-%                         PTcorrect = 1;
-%                     elseif vars.Resp == 0 % Angry
-%                         PTcorrect = 0;
-%                     end
-%                 elseif (vars.cue0Prediction(thisTrial) == 2)% cue 0 & cue0->Angry
-%                     if vars.Resp == 1 % Happy
-%                         PTcorrect = 0;
-%                     elseif vars.Resp == 0 % Angry
-%                         PTcorrect = 1;
-%                     end
-%                 elseif (vars.cue0Prediction(thisTrial) == 0)
-%                     PTcorrect = NaN;
-%                 end
-%                 
-%             elseif (vars.PTwhichCue(thisPT)==1)     % cue_1
-%                 if (vars.cue0Prediction(thisTrial) == 1)% cue 1, & cue1->angry
-%                     if vars.Resp == 1 % Happy
-%                         PTcorrect = 0;
-%                     elseif vars.Resp == 0 % Angry
-%                         PTcorrect = 1;
-%                     end
-%                 elseif (vars.cue0Prediction(thisTrial) == 2)% cue 1 & cue1->happy
-%                     if vars.Resp == 1 % Happy
-%                         PTcorrect = 1;
-%                     elseif vars.Resp == 0 % Angry
-%                         PTcorrect = 0;
-%                     end
-%                 elseif (vars.cue0Prediction(thisTrial) == 0)
-%                     PTcorrect = NaN;
-%                 end
-%             end
-%             
-%             % Write trial result to file
-%             Results.PTResp(thisTrial) = vars.Resp;
-%             Results.PTAcc(thisTrial) = PTcorrect;
-%             Results.PTRT(thisTrial) = RT;
-%             
-%             Screen('Close', ImTex);                      % Close the image texture
-%             
-%             % Increment predictive trial counter
-%             thisPT = thisPT + 1;
-%             
-%         end%predictionTrial
-        
+        send_propix_trigger(vars.propixtrigger, vars.triggers.CloseTrigger)
+        [~, ~] = Screen('Flip', scr.win, when, dontclear);
         %% Finish cleaning up after the trial
          % If the trial was missed, repeat it or go on...
         if vars.RepeatMissedTrials
@@ -977,7 +870,7 @@ try
         PTcorrect = NaN;
         
 
-        
+  
         %% Should we have a break here?
         if (thisTrial == vars.breaks(1)) || (thisTrial == vars.breaks(2))
             % Gray screen - Take a short break
@@ -986,8 +879,11 @@ try
                 Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
             end
             DrawFormattedText(scr.win, vars.InstructionPause, 'center', 'center', scr.TextColour);
+            
+            send_propix_trigger(vars.propixtrigger, vars.triggers.BreakOnset)
             [~, breakStartsNow] = Screen('Flip', scr.win);
 
+             send_propix_trigger(vars.propixtrigger, vars.triggers.CloseTrigger)
             if vars.pptrigger
                 sendTrigger(200) % 200 = start of break trigger
                 disp('Trigger received')
@@ -1044,7 +940,8 @@ try
             
         end
         
-    end%thisTrial
+    end
+ 
     
     vars.RunSuccessfull = 1;
     Results.SessionEndT = GetSecs - Results.SessionStartT;

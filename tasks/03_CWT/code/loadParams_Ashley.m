@@ -19,8 +19,32 @@ useEyeLink          = 1;                % Use EyeLink to record gaze & pupil?
 vars.fixCrossFlag   = 1;
 vars.pluxSynch      = 0;
 vars.pptrigger      = 0;
+vars.propixtrigger  = 1;
 vars.runCWTtutorial = 0;
 % vars.language       = 1;
+
+
+%% Triggers - propix
+
+% Generic  triggers
+vars.triggers.CloseTrigger   = 0;
+vars.triggers.TaskStart      = 11; % generic code for a task started
+vars.triggers.TaskEnd        = 22; % generic code for a task ended
+vars.triggers.BreakOnset     = 33; % generic code for a break started
+vars.triggers.fixOnset       = 44; % generic code for a fixation occured 
+
+% CWT triggers
+
+vars.triggers.cuesOnset     = 1; % onset of cue image (first frame)
+vars.triggers.respIntOnset  = 2; % onset of response interval (appearance of response options)
+vars.triggers.respOnset     = 3; % time of button press
+vars.triggers.stimOnset     = 4; % onset of face image 
+vars.triggers.rateIntOnset  = 5; % onset of rating inteval (appearance of confidence scale)
+vars.triggers.rateOnset     = 6; % time of confidence button presses (will be multiple instances) 
+vars.triggers.trialEnd      = 7; % trial is over
+
+
+
 
 % Get current timestamp & set filename
 vars.exptName = 'CWTcontent_';
@@ -192,7 +216,8 @@ if vars.language == 1       % English
             switch vars.InputDevice
                 case 1 % Keyboard
                     vars.InstructionTask = 'Decide if the cue is predicting an angry or happy face on each trial. \n \n ANGRY - BUTTON 1                         HAPPY - BUTTON 4 \n \n \n \n Then, rate how confident you are in your choice using the button box. \n \n Unsure (1), Sure (2), and Very sure (3). \n \n Press BUTTON 3 to start...';
-                    vars.InstructionConf = 'Rate your confidence \n \n Unsure (1)     Sure (2)     Very sure (3)';
+                    vars.InstructionConf = 'Rate your confidence \n \n Guessing (1)  Unsure (2)  Confident (3)  Certain (4)';
+                    vars.InstructionConf2 = 'Rate your confidence \n \n Angry Certain (1)  Angry Guess (2)  Happy Guess (3)  Happy Certain (4)';
                     
                 case 2 % Mouse
                     vars.InstructionTask = 'Decide if the cue is predicting an angry or happy face on each trial. \n \n ANGRY - BUTTON 1                         HAPPY - BUTTON 4 \n \n \n \n Then, rate how confident you are in your choice using BUTTONS 1 and 4. \n \n Press BUTTON 3 to start...';

@@ -25,6 +25,15 @@ if vars.pptrigger
     sendTrigger = intialiseParallelPort();
 end
 
+        
+send_propix_trigger(vars.propixtrigger, vars.triggers.respOnset)
+
+% assuming windowPtr is already defined
+when = 0;  % Flip on the next possible video retrace
+dontclear = 1;  % Do not clear the framebuffer after flip
+validkeypress = 0;
+
+
 % loop until valid key is pressed or RespT is reached
 while ((GetSecs - vars.StartRT) <= vars.RespT)
     
@@ -33,10 +42,36 @@ while ((GetSecs - vars.StartRT) <= vars.RespT)
         case 2 % Keyboard response
 
             [~,~,keys.KeyCode] = KbCheck;
-            while (~any(keys.KeyCode)) && ((GetSecs - vars.StartRT) <= vars.RespT) % wait for press & response time
-                [~,~,keys.KeyCode] = KbCheck; % L [1 0 0], R [0 0 1]
+            
+
+            while (~validkeypress) && ((GetSecs - vars.StartRT) <= vars.RespT)
+                
+                [~,vars.EndRT,keys.KeyCode] = KbCheck; % L [1 0 0], R [0 0 1]
+                
+                if keys.KeyCode(keys.Left)==1 || keys.KeyCode(keys.Right) == 1
+
+
+                    [vars.RTFlipTime, ~] = Screen('Flip', scr.win, when, dontclear);
+
+                     validkeypress = 1;
+                     
+
+                else
+                    
+                    validkeypress  = 0;
+                    WaitSecs(0.001);
+
+                end
+
+
+                
+
             end
             
+            
+            send_propix_trigger(vars.propixtrigger, vars.triggers.CloseTrigger)
+           
+             
             % KbCheck for response
             if keys.KeyCode(keys.Left)==1         % Angry
                 % update results
@@ -63,14 +98,14 @@ while ((GetSecs - vars.StartRT) <= vars.RespT)
                 
             else
                 % ? DrawText: Please press a valid key...
+                vars.ValidTrial(1) = 0;
+                vars.Resp = NaN;
             end
             
             if vars.pptrigger
                 sendTrigger(0) % remember to manually pull down triggers
             end
 
-            [~, vars.EndRT, keys.KeyCode] = KbCheck;
-            WaitSecs(0.001);
                         
         case 1 % Mouse
             
