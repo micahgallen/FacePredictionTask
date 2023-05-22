@@ -33,6 +33,11 @@ vars.triggers.TaskEnd        = 22; % generic code for a task ended
 vars.triggers.BreakOnset     = 33; % generic code for a break started
 vars.triggers.fixOnset       = 44; % generic code for a fixation occured 
 
+
+
+
+
+
 % CWT triggers
 
 vars.triggers.cuesOnset     = 1; % onset of cue image (first frame)
@@ -44,6 +49,10 @@ vars.triggers.rateOnset     = 6; % time of confidence button presses (will be mu
 vars.triggers.trialEnd      = 7; % trial is over
 
 
+
+% localizer triggers
+
+vars.triggers.LocStimOnset = 12;
 
 
 % Get current timestamp & set filename

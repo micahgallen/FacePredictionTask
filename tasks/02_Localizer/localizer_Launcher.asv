@@ -396,8 +396,8 @@ try
                     sendTrigger(0) % remember to manually pull down triggers
                 end
 
-                %WaitSecs(generate_jitter(vars.ISI_min, vars.ISI_max))
-                 WaitSecs(vars.StimOn);
+                WaitSecs(generate_jitter(vars.ISI_min, vars.ISI_max))
+%                WaitSecs(vars.StimOn);
                 %% 0.2s fixation
                 % Is this a target?
                 if vars.targetTrialsArray(1, totalStimCounter)
@@ -410,8 +410,7 @@ try
 
                 send_propix_trigger(vars.propixtrigger, vars.triggers.CloseTrigger)
                 [~, StimOff] = Screen('Flip', scr.win);
-              %  WaitSecs(vars.ITI);
-                WaitSecs(generate_jitter(vars.ITI_min, vars.ITI_max)) %% added jittered ITI
+                WaitSecs(vars.ITI);
                 
                 % Check for keypress
                 [ pressed, firstPress] = KbQueueCheck(deviceIndex);
@@ -503,8 +502,6 @@ try
                 % Draw texture image to backbuffer
                 Screen('FillRect', scr.win, scr.BackgroundGray, scr.winRect);
                 Screen('DrawTexture', scr.win, ImTex);
-
-                send_propix_trigger(vars.propixtrigger, vars.triggers.LocStimOnset)
                 [~, StimOn] = Screen('Flip', scr.win);
 
                 trigger_stimno = thisStim + 40;
@@ -535,10 +532,8 @@ try
                     scr.fixation.color = {[169,169,169],[0,0,0]};
                 end
                 scr = drawFixation(scr);
-
-                send_propix_trigger(vars.propixtrigger, vars.triggers.CloseTrigger)
                 [~, StimOff] = Screen('Flip', scr.win);
-                WaitSecs(generate_jitter(vars.ISI_min, vars.ISI_max)); % jittered isi 
+                WaitSecs(vars.ITI);
                 
                 % Check for keypress
                 [ pressed, firstPress] = KbQueueCheck(deviceIndex);
