@@ -76,6 +76,31 @@ vars.ITI = randInRange(vars.ITI_min, vars.ITI_max, [vars.NTrialsTotal,1]);
 singleTrialDuration = vars.StimT + vars.RespT + (vars.ConfT-1) + vars.ITI_max;
 vars.sessionDuration = singleTrialDuration * vars.NTrialsTotal;
 
+%% Triggers - propix
+
+% Generic  triggers
+vars.triggers.CloseTrigger   = 0;
+vars.triggers.TaskStart      = 11; % generic code for a task started
+vars.triggers.TaskEnd        = 22; % generic code for a task ended
+vars.triggers.BreakOnset     = 33; % generic code for a break started
+vars.triggers.fixOnset       = 44; % generic code for a fixation occured 
+
+
+% CWT triggers
+
+vars.triggers.cuesOnset     = 1; % onset of cue image (first frame)
+vars.triggers.respIntOnset  = 2; % onset of response interval (appearance of response options)
+vars.triggers.respOnset     = 3; % time of button press
+vars.triggers.stimOnset     = 4; % onset of face image 
+vars.triggers.rateIntOnset  = 5; % onset of rating inteval (appearance of confidence scale)
+vars.triggers.rateOnset     = 6; % time of confidence button presses (will be multiple instances) 
+vars.triggers.trialEnd      = 7; % trial is over
+
+
+% localizer triggers
+
+vars.triggers.LocStimOnset = 12;
+
 
 %% Plux synch variables
 % Colours: White, Black

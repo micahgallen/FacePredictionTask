@@ -25,6 +25,7 @@ if vars.pptrigger
 end
 
 % loop until valid key is pressed or RespT is reached
+send_propix_trigger(vars.propixtrigger, vars.triggers.respOnset+50)
 while ((GetSecs - vars.StartRT) <= vars.RespT)
     
     switch vars.InputDevice
@@ -35,6 +36,9 @@ while ((GetSecs - vars.StartRT) <= vars.RespT)
             while (~any(keys.KeyCode)) && ((GetSecs - vars.StartRT) <= vars.RespT) % wait for press & response time
                 [~,~,keys.KeyCode] = KbCheck; % L [1 0 0], R [0 0 1]
             end
+
+            [~, ~] = Screen('Flip', scr.win, 0, 1);
+            send_propix_trigger(vars.propixtrigger, vars.triggers.CloseTrigger)
 
             % KbCheck for response
             if keys.KeyCode(keys.Left)==1         % Angry

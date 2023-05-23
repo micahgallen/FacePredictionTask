@@ -147,6 +147,34 @@ vars.ISI_min            = .5;    % 2 % long variable ISI, 2-3 or 2-4 sec
 vars.ISI_max            = 1.5;    % 3
 
 
+
+%% Triggers - propix
+
+% Generic  triggers
+vars.triggers.CloseTrigger   = 0;
+vars.triggers.TaskStart      = 11; % generic code for a task started
+vars.triggers.TaskEnd        = 22; % generic code for a task ended
+vars.triggers.BreakOnset     = 33; % generic code for a break started
+vars.triggers.fixOnset       = 44; % generic code for a fixation occured 
+
+
+% CWT triggers
+
+vars.triggers.cuesOnset     = 1; % onset of cue image (first frame)
+vars.triggers.respIntOnset  = 2; % onset of response interval (appearance of response options)
+vars.triggers.respOnset     = 3; % time of button press
+vars.triggers.stimOnset     = 4; % onset of face image 
+vars.triggers.rateIntOnset  = 5; % onset of rating inteval (appearance of confidence scale)
+vars.triggers.rateOnset     = 6; % time of confidence button presses (will be multiple instances) 
+vars.triggers.trialEnd      = 7; % trial is over
+
+
+
+% localizer triggers
+
+vars.triggers.LocStimOnset = 12;
+
+
 % vars.BlockOrder       = [1 3 2 4 1 3 2 4 1 3 2 4 1 3 2 4]; %repmat(1:vars.NStims,1,vars.BlockReps);%[1 3 2 4 1 3 2 4 1 3 2 4 1 3 2 4];        % cue-face-cue-face
 
 tempBlockOrder1     = [1 3 2 4 1 3 2 4 1 3 2 4 1 3 2 4];
@@ -324,6 +352,20 @@ try
     %% Main loop
     totalStimCounter = 1;
     tic
+%% propix setup
+    isConnected = Datapixx('isReady');
+    if ~isConnected
+        Datapixx('Open');
+    end
+
+
+    send_propix_trigger(vars.propixtrigger, vars.triggers.TaskStart+60)
+    [~, ~] = Screen('Flip', scr.win, 0, 1);
+    send_propix_trigger(vars.propixtrigger, vars.triggers.CloseTrigger)
+
+    
+
+
     for thisBlock = 1:length(vars.BlockOrder)
         
         %% Update the experimenter and send a message to EL

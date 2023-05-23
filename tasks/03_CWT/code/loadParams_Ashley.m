@@ -34,10 +34,6 @@ vars.triggers.BreakOnset     = 33; % generic code for a break started
 vars.triggers.fixOnset       = 44; % generic code for a fixation occured 
 
 
-
-
-
-
 % CWT triggers
 
 vars.triggers.cuesOnset     = 1; % onset of cue image (first frame)

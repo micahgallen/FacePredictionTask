@@ -162,6 +162,16 @@ try
     endOfExpt = 0;
     trialReps = 0;
     
+
+    isConnected = Datapixx('isReady');
+    if ~isConnected
+        Datapixx('Open');
+    end
+
+
+    send_propix_trigger(vars.propixtrigger, vars.triggers.TaskStart+50)
+    [~, ~] = Screen('Flip', scr.win, 0, 1);
+    send_propix_trigger(vars.propixtrigger, vars.triggers.CloseTrigger)
     while endOfExpt ~= 1       % General stop flag for the loop
         
         Results.SOT_trial(thisTrial) = GetSecs;
@@ -209,7 +219,12 @@ try
         if vars.pluxSynch
             Screen('FillRect', scr.win, scr.pluxBlack, scr.pluxRect);
         end
+
+        send_propix_trigger(vars.propixtrigger, vars.triggers.stimOnset+50) % trigger is stim onset + 50
+
         [~, StimOn] = Screen('Flip', scr.win);
+        
+        send_propix_trigger(vars.propixtrigger, vars.triggers.CloseTrigger)
         
         Results.SOT_face(thisTrial) = GetSecs;
 
@@ -297,7 +312,11 @@ try
         end
         DrawFormattedText(scr.win, [vars.InstructionQ], 'center', 'center', scr.TextColour);
         
+        send_propix_trigger(vars.propixtrigger, vars.triggers.rateOnset+50)
+
         [~, vars.StartRT] = Screen('Flip', scr.win);
+
+        send_propix_trigger(vars.propixtrigger, vars.triggers.CloseTrigger)
         
         if vars.pptrigger
             sendTrigger(70) % 70 = emotion prompt trigger

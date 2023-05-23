@@ -124,6 +124,17 @@ try
         Eyelink('message','STARTEXP');
     end
 
+
+    isConnected = Datapixx('isReady');
+    if ~isConnected
+        Datapixx('Open');
+    end
+
+
+    send_propix_trigger(vars.propixtrigger, vars.triggers.TaskStart+60)
+    [~, ~] = Screen('Flip', scr.win, 0, 1);
+    send_propix_trigger(vars.propixtrigger, vars.triggers.CloseTrigger)
+    [~, ~] = Screen('Flip', scr.win, 0, 1);
     %% Show fixation screen - 5 min
     while (GetSecs - rest_startT) <= restingscan_time
         Screen('FillRect', scr.win, scr.BackgroundGray, scr.winRect);
@@ -140,6 +151,12 @@ try
             return
         end
     end
+
+    send_propix_trigger(vars.propixtrigger, vars.triggers.TaskEnd+60)
+    [~, ~] = Screen('Flip', scr.win, 0, 1);
+    send_propix_trigger(vars.propixtrigger, vars.triggers.CloseTrigger)
+    [~, ~] = Screen('Flip', scr.win, 0, 1);
+
 
      %% Show end screen
 %     feedbackText = ['End of session. Close your eyes and relax while we set up the next scan...'];
